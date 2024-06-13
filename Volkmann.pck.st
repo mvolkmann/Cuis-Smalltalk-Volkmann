@@ -496,19 +496,19 @@ updateLabel
 
 !MorphicDemos class methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:11:52'!
 buttonDemo
-	"demonstrates using of the custom class ButtonMorph"
+	"demonstrates using of the custom class VButtonMorph"
 
 	| decBtn incBtn label layout |
 	label := LabelMorph new
 		  contents: '0';
 		  color: Color white.
-	decBtn := ButtonMorph new
+	decBtn := VButtonMorph new
 		  color: Color yellow;
 		  label: 'Decrement';
 		  labelColor: Color red;
 		  model: [ label contents: (label contents asNumber - 1) asString ];
 		  action: #value.
-	incBtn := ButtonMorph new
+	incBtn := VButtonMorph new
 		  color: Color yellow;
 		  label: 'Increment';
 		  labelColor: Color green;
