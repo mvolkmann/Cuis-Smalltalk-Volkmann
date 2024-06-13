@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 12 June 2024 at 7:21:49 pm'!
+'From Cuis7.1 [latest update: #6452] on 13 June 2024 at 11:03:41 am'!
 'Description '!
-!provides: 'Volkmann' 1 76!
+!provides: 'Volkmann' 1 78!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -374,7 +374,7 @@ initialize
 	super initialize.
 	Count := Count + 1! !
 
-!Dog methodsFor: 'initialization' stamp: 'RMV 6/12/2024 13:47:54'!
+!Dog methodsFor: 'private' stamp: 'RMV 6/12/2024 13:47:54'!
 initializeName: aName breed: aBreed
 	name := aName.
 	breed := aBreed! !
@@ -396,9 +396,9 @@ initialize
 	"This must be explicitly called with Dog initialize."
 	Count := 0! !
 
-!Dog class methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:43:52'!
+!Dog class methodsFor: 'initialization' stamp: 'RMV 6/13/2024 10:50:57'!
 name: aName breed: aBreed
-	^self new initializeName: aName breed: aBreed! !
+	^self new initializeName: aName breed: aBreed; beImmutable; yourself! !
 
 !Map methodsFor: 'accessing' stamp: 'RMV 6/10/2024 13:04:32'!
 doesNotUnderstand: aMessage
@@ -496,19 +496,19 @@ updateLabel
 
 !MorphicDemos class methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:11:52'!
 buttonDemo
-	"demonstrates using of the custom class VButtonMorph"
+	"demonstrates using of the custom class ButtonMorph"
 
 	| decBtn incBtn label layout |
 	label := LabelMorph new
 		  contents: '0';
 		  color: Color white.
-	decBtn := VButtonMorph new
+	decBtn := ButtonMorph new
 		  color: Color yellow;
 		  label: 'Decrement';
 		  labelColor: Color red;
 		  model: [ label contents: (label contents asNumber - 1) asString ];
 		  action: #value.
-	incBtn := VButtonMorph new
+	incBtn := ButtonMorph new
 		  color: Color yellow;
 		  label: 'Increment';
 		  labelColor: Color green;
