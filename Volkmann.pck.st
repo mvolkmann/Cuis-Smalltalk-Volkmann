@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 13 June 2024 at 11:03:41 am'!
+'From Cuis7.1 [latest update: #6452] on 14 June 2024 at 9:42:42 am'!
 'Description '!
-!provides: 'Volkmann' 1 78!
+!provides: 'Volkmann' 1 100!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -104,16 +104,6 @@ Object subclass: #Math
 Math class
 	instanceVariableNames: ''!
 
-!classDefinition: #MorphicDemos category: #Volkmann!
-Object subclass: #MorphicDemos
-	instanceVariableNames: 'greetLabel name selectionInterval textProvider'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'MorphicDemos class' category: #Volkmann!
-MorphicDemos class
-	instanceVariableNames: ''!
-
 !classDefinition: #MyWebServer category: #Volkmann!
 Object subclass: #MyWebServer
 	instanceVariableNames: 'dogDict server'
@@ -154,6 +144,36 @@ Object subclass: #TypeDemo
 TypeDemo class
 	instanceVariableNames: ''!
 
+!classDefinition: #VBook category: #Volkmann!
+Object subclass: #VBook
+	instanceVariableNames: 'author title used year'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VBook class' category: #Volkmann!
+VBook class
+	instanceVariableNames: ''!
+
+!classDefinition: #VButtonDemo category: #Volkmann!
+Object subclass: #VButtonDemo
+	instanceVariableNames: 'greetLabel name'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VButtonDemo class' category: #Volkmann!
+VButtonDemo class
+	instanceVariableNames: ''!
+
+!classDefinition: #VDebugMe category: #Volkmann!
+Object subclass: #VDebugMe
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VDebugMe class' category: #Volkmann!
+VDebugMe class
+	instanceVariableNames: ''!
+
 !classDefinition: #VDisplay category: #Volkmann!
 Object subclass: #VDisplay
 	instanceVariableNames: ''
@@ -162,6 +182,16 @@ Object subclass: #VDisplay
 	category: 'Volkmann'!
 !classDefinition: 'VDisplay class' category: #Volkmann!
 VDisplay class
+	instanceVariableNames: ''!
+
+!classDefinition: #VGreet category: #Volkmann!
+Object subclass: #VGreet
+	instanceVariableNames: 'greetLabel name'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VGreet class' category: #Volkmann!
+VGreet class
 	instanceVariableNames: ''!
 
 !classDefinition: #VShape category: #Volkmann!
@@ -387,6 +417,10 @@ breed
 name
 	^name! !
 
+!Dog methodsFor: 'accessing' stamp: 'RMV 6/13/2024 11:04:24'!
+speak
+	^'bark'! !
+
 !Dog class methodsFor: 'accessing' stamp: 'RMV 6/12/2024 09:45:13'!
 count
 	^Count! !
@@ -436,65 +470,324 @@ factorial: n
 		ifTrue: 1
 		ifFalse: [n * (Math factorial: n - 1)])! !
 
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:10:37'!
-initialize
-	self textInputDemo
-			! !
+!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:23'!
+createDog: req
+	req send200Response: 'creating'! !
 
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/11/2024 16:26:55'!
-name
-	'in MorphicDemos name' print.
-	^name! !
+!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:11'!
+deleteDog: req
+	req send200Response: 'deleting'! !
 
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:40:47'!
-name: aString
-	Transcript show: aString.
-	name := aString.
-	('name is now {1}' format: {name}) print.
-	self updateLabel! !
-
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:03:53'!
-selectionInterval
-	^selectionInterval! !
-
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:04:13'!
-selectionInterval: anInterval
-	selectionInterval := anInterval! !
-
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/11/2024 16:28:45'!
-textInputDemo
-	"demonstrates using a TextModelMorph"
-
-	| textMorph |
+!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/13/2024 17:00:37'!
+retrieveDogs: req
+	| body css html tableRows |
 	
-	name := 'Wayne Gretzky'.
-		
-	greetLabel := LabelMorph new
-		color: Color white.
-	self updateLabel.
+	req inspect.
+	body := (req stream) receiveData.
+	body print.
+	req method = 'POST' ifTrue: [
+		| dog |
+		dog := Dog name: 'Snoopy' breed: 'Beagle'.
+		dogDict at: #Snoopy put: dog.
+		^ req send200Response: (MyWebServer json: dog)
+	].
 
+	
+	req inspect.
+	
+	css := '
+		body { font-family: sans-serif }
+		table { border-collapse: collapse }
+		td, th {
+			border: 1px solid gray;
+			padding: 0.5rem;
+		}
+		th {
+			background-color: orange;
+		}
+	'.
+	
+	tableRows := OrderedCollection new.
+	tableRows add: #tr -> { #th -> 'Name'. #th -> 'Breed' }.
+	dogDict do: [ :dog | tableRows add: (#tr -> { #td -> dog name. #td -> dog breed }) ].
+	
+	html := self element: (#html -> {
+		#head -> {
+			#title -> 'My Dogs'.
+			#style -> css
+		}.
+		#body -> {
+			#h1 -> 'My Dogs'.
+			#table -> tableRows
+		}
+	}).
+		
+	req send200Response: html contentType: 'text/html'! !
+
+!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:18:56'!
+updateDog: req
+	req send200Response: 'updating'! !
+
+!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/13/2024 16:01:42'!
+initialize
+	"demonstrates using the WebServer class"
+	
+	Transcript clear.
+	dogDict := Dictionary newFrom: {
+		#Comet -> (Dog name: 'Comet' breed: 'Whippet').
+		#Oscar -> (Dog name: 'Oscar' breed: 'German Shorthaired Pointer').
+	}.
+	
+	server := WebServer new listenOn: 3000.
+	server addService: '/' action: [ :req | req send200Response: 'Home Page'].
+	server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!'].
+	"server addService: '/dog' action: [ :req | req send200Response: 'Comet']."
+	server addService: '/dog' action: [ :req | self retrieveDogs: req].
+	"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
+
+	'listening on port 3000' print.
+	
+	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
+	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"! !
+
+!MyWebServer methodsFor: 'html' stamp: 'RMV 6/12/2024 16:07:53'!
+element: anAssoc
+	"This returns an HTML string.
+	The key in the Association must be a kind of String (such as a Symbol).
+	The value in the Association can be a primitive value or
+	an Array of Associations that represent nested elements."
+	
+	| content inner tag template |
+	
+	tag := anAssoc key.
+	content := anAssoc value.
+	template := '<{1}>{2}</{1}>'.
+	(content isKindOf: String)
+		ifTrue: [^​ template format: { tag. content } ]
+		ifFalse: [
+			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
+			inner := ''.
+			content do: [ :item | inner := inner, (self element: item) ].
+			^ template format: { tag. inner }
+		]
+! !
+
+!MyWebServer class methodsFor: 'json' stamp: 'RMV 6/13/2024 16:45:43'!
+json: anObject
+	"Answers a JSON string for anObject"
+	
+	| index properties template value vars |
+	
+	properties := OrderedCollection new.
+	vars := anObject class allInstVarNames.
+	vars do: [ :key |
+		index := vars indexOf: key.
+		value := anObject instVarAt: index.
+		template := (value isKindOf: String)
+			ifTrue: ['"{1}": "{2}']
+			ifFalse: ['"{1}": {2}'].
+		properties add: (template format: { key. value })
+	].
+	^'{', (', ' join: properties), '}'
+! !
+
+!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 18:58:56'!
+area
+	^height * width! !
+
+!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:00:44'!
+initialize
+	height := 1.
+	width := 1! !
+
+!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:45'!
+initializeHeight: aHeight width: aWidth
+	height := aHeight.
+	width := aWidth! !
+
+!Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:36'!
+height: aHeight width: aWidth
+	^self new initializeHeight: aHeight width: aWidth! !
+
+!TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
+double: obj
+	"demonstrates taking different actions based on the type of an argument"
+
+	(obj isKindOf: Number) ifTrue: [^obj * 2].
+	(obj isKindOf: String) ifTrue: [^obj asNumber * 2].
+	^0! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 14:49:56'!
+author
+	"Answer the value of author"
+
+	^ author! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 14:49:56'!
+author: anObject
+	"Set the value of author"
+
+	author := anObject! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 14:49:56'!
+title
+	"Answer the value of title"
+
+	^ title! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 14:49:56'!
+title: anObject
+	"Set the value of title"
+
+	title := anObject! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 16:46:23'!
+used
+	"Answer the value of used"
+
+	^ used! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 16:46:23'!
+used: anObject
+	"Set the value of used"
+
+	used := anObject! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 16:46:23'!
+year
+	"Answer the value of year"
+
+	^ year! !
+
+!VBook methodsFor: 'accessing' stamp: 'RMV 6/13/2024 16:46:23'!
+year: anObject
+	"Set the value of year"
+
+	year := anObject! !
+
+!VButtonDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:42:21'!
+initialize
+	"demonstrates using of the custom class VButtonMorph"
+
+	| decBtn incBtn label layout |
+	label := LabelMorph new
+		  contents: '0';
+		  color: Color white.
+	decBtn := VButtonMorph new
+		  color: Color yellow;
+		  label: 'Decrement';
+		  labelColor: Color red;
+		  model: [ label contents: (label contents asNumber - 1) asString ];
+		  action: #value.
+	incBtn := VButtonMorph new
+		  color: Color yellow;
+		  label: 'Increment';
+		  labelColor: Color green;
+		  model: [ label contents: (label contents asNumber + 1) asString ];
+		  action: #value.
+	layout := LayoutMorph new
+		addMorph: decBtn;
+		addMorph: label;
+		addMorph: incBtn;
+		"color: Color transparent ;"
+		separation: 10;
+		location: (MorphicTranslation withTranslation: 70@70);
+ 		rotateBy: 15 degreesToRadians;
+		scale: 1.5.
+
+	"Add horizontal padding in buttons."
+	decBtn morphWidth: (incBtn morphWidth + 20).
+	incBtn morphWidth: (incBtn morphWidth + 20).
+	
+	layout openInWorld! !
+
+!VDebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 6/13/2024 15:18:54'!
+doMath
+	| h x y |
+	x := 3.
+	y := 4.
+	h := (x squared + y squared) sqrt.
+	^h! !
+
+!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:04:54'!
+buttons
+	"adds buttons for setting full screen on or off"
+
+	LayoutMorph newColumn
+		addMorph: (LabelMorph contents: 'Full Screen');
+		addMorph: (LayoutMorph newRow
+			addMorph: (VButtonMorph label: 'On' block: [ VDisplay fullScreenOn ]);
+			addMorph: (VButtonMorph label: 'Off' block: [ VDisplay fullScreenOff ]);
+			color: Color transparent
+		);
+		location: (MorphicTranslation withTranslation: 10@10);
+		openInWorld! !
+
+!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:31'!
+fullScreen: aBoolean
+	Display fullScreenMode: aBoolean.
+	Display newDepth: Display depth! !
+
+!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:49'!
+fullScreenOff
+	self fullScreen: false! !
+
+!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:58'!
+fullScreenOn
+	self fullScreen: true! !
+
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:38:38'!
+initialize
+	| size textMorph |
+
+	name := ''.	
+	size := 160@18.
+	
+	"By default, the message specified by textSetter is only sent when user presses ctrl-s.
+	Send acceptOnCR: true or acceptOnAny: true to change this."
 	textMorph := TextModelMorph
 		textProvider: self
 		textGetter: #name
 		textSetter: #name: .
-		"selectionGetter: #selectionInterval."
-		"textMorph emptyTextDisplayMessage: 'Enter response'."
-	
+	textMorph
+		acceptOnAny: true; "sends textSetter message on every change"
+		emptyTextDisplayMessage: 'Enter your name';
+		morphExtent: size;
+		hideScrollBarsIndefinitely;
+		wrapFlag: false.
+
+	greetLabel := LabelMorph new color: Color white.
+	greetLabel morphExtent: size.
+	"Can you limit the width of this?"
+	self updateLabel.
+			
 	LayoutMorph new
 		beColumn;
 		addMorph: textMorph;
 		addMorph: greetLabel;
-		"color: Color transparent ;"
 		separation: 10;
-		location: (MorphicTranslation withTranslation: 70@70);
+		location: (MorphicTranslation withTranslation: 10@100);
 		openInWorld.! !
 
-!MorphicDemos methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:32:34'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:37:20'!
+name
+	^name! !
+
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:37:20'!
+name: aString
+	name := aString.
+	self updateLabel! !
+
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:37:20'!
 updateLabel
-	greetLabel contents: ('Hello, {1}!!' format: {name})
+	greetLabel contents: (
+		name isEmpty
+			ifTrue: ['']
+			ifFalse: ['Hello, {1}!!' format: {name}]
+	)
 ! !
 
-!MorphicDemos class methodsFor: 'as yet unclassified' stamp: 'RMV 6/10/2024 11:11:52'!
+!VGreet class methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:37:20'!
 buttonDemo
 	"demonstrates using of the custom class ButtonMorph"
 
@@ -530,147 +823,6 @@ buttonDemo
 	
 	layout openInWorld.
 	^layout.! !
-
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:23'!
-createDog: req
-	req send200Response: 'creating'! !
-
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:11'!
-deleteDog: req
-	req send200Response: 'deleting'! !
-
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/12/2024 16:01:33'!
-retrieveDogs: req
-	| css html tableRows |
-	
-	css := '
-		body { font-family: sans-serif }
-		table { border-collapse: collapse }
-		td, th {
-			border: 1px solid gray;
-			padding: 0.5rem;
-		}
-		th {
-			background-color: orange;
-		}
-	'.
-	
-	tableRows := OrderedCollection new.
-	tableRows add: #tr -> { #th -> 'Name'. #th -> 'Breed' }.
-	dogDict do: [ :dog | tableRows add: (#tr -> { #td -> dog name. #td -> dog breed }) ].
-	
-	html := self element: (#html -> {
-		#head -> {
-			#title -> 'My Dogs'.
-			#style -> css
-		}.
-		#body -> {
-			#h1 -> 'My Dogs'.
-			#table -> tableRows
-		}
-	}).
-		
-	req send200Response: html contentType: 'text/html'! !
-
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:18:56'!
-updateDog: req
-	req send200Response: 'updating'! !
-
-!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/12/2024 16:16:28'!
-initialize
-	"demonstrates using the WebServer class"
-	
-	Transcript clear.
-	dogDict := Dictionary newFrom: {
-		#Comet -> (Dog name: 'Comet' breed: 'Whippet').
-		#Oscar -> (Dog name: 'Oscar' breed: 'German Shorthaired Pointer').
-	}.
-	
-	server := WebServer new listenOn: 3000.
-	server addService: '/' action: [ :req | req send200Response: 'Home Page'].
-	server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!'].
-	server addService: '/dog' action: [ :req | self retrieveDogs: req] methods: #('GET').
-	server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST').
-
-	'listening on port 3000' print.
-	
-	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
-	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"! !
-
-!MyWebServer methodsFor: 'html' stamp: 'RMV 6/12/2024 16:07:53'!
-element: anAssoc
-	"This returns an HTML string.
-	The key in the Association must be a kind of String (such as a Symbol).
-	The value in the Association can be a primitive value or
-	an Array of Associations that represent nested elements."
-	
-	| content inner tag template |
-	
-	tag := anAssoc key.
-	content := anAssoc value.
-	template := '<{1}>{2}</{1}>'.
-	(content isKindOf: String)
-		ifTrue: [^​ template format: { tag. content } ]
-		ifFalse: [
-			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
-			inner := ''.
-			content do: [ :item | inner := inner, (self element: item) ].
-			^ template format: { tag. inner }
-		]
-! !
-
-!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 18:58:56'!
-area
-	^height * width! !
-
-!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:00:44'!
-initialize
-	height := 1.
-	width := 1! !
-
-!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:45'!
-initializeHeight: aHeight width: aWidth
-	height := aHeight.
-	width := aWidth! !
-
-!Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:36'!
-height: aHeight width: aWidth
-	^self new initializeHeight: aHeight width: aWidth! !
-
-!TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
-double: obj
-	"demonstrates taking different actions based on the type of an argument"
-
-	(obj isKindOf: Number) ifTrue: [^obj * 2].
-	(obj isKindOf: String) ifTrue: [^obj asNumber * 2].
-	^0! !
-
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:04:54'!
-buttons
-	"adds buttons for setting full screen on or off"
-
-	LayoutMorph newColumn
-		addMorph: (LabelMorph contents: 'Full Screen');
-		addMorph: (LayoutMorph newRow
-			addMorph: (VButtonMorph label: 'On' block: [ VDisplay fullScreenOn ]);
-			addMorph: (VButtonMorph label: 'Off' block: [ VDisplay fullScreenOff ]);
-			color: Color transparent
-		);
-		location: (MorphicTranslation withTranslation: 10@10);
-		openInWorld! !
-
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:31'!
-fullScreen: aBoolean
-	Display fullScreenMode: aBoolean.
-	Display newDepth: Display depth! !
-
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:49'!
-fullScreenOff
-	self fullScreen: false! !
-
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:58'!
-fullScreenOn
-	self fullScreen: true! !
 
 !VShape methodsFor: 'evaluating' stamp: 'RMV 6/2/2024 08:27:29'!
 area
