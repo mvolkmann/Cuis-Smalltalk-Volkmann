@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 14 June 2024 at 9:42:42 am'!
+'From Cuis7.1 [latest update: #6452] on 14 June 2024 at 9:51:11 am'!
 'Description '!
-!provides: 'Volkmann' 1 100!
+!provides: 'Volkmann' 1 102!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -174,14 +174,14 @@ Object subclass: #VDebugMe
 VDebugMe class
 	instanceVariableNames: ''!
 
-!classDefinition: #VDisplay category: #Volkmann!
-Object subclass: #VDisplay
+!classDefinition: #VFullScreenButtons category: #Volkmann!
+Object subclass: #VFullScreenButtons
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'VDisplay class' category: #Volkmann!
-VDisplay class
+!classDefinition: 'VFullScreenButtons class' category: #Volkmann!
+VFullScreenButtons class
 	instanceVariableNames: ''!
 
 !classDefinition: #VGreet category: #Volkmann!
@@ -709,32 +709,32 @@ doMath
 	h := (x squared + y squared) sqrt.
 	^h! !
 
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:04:54'!
-buttons
-	"adds buttons for setting full screen on or off"
-
-	LayoutMorph newColumn
-		addMorph: (LabelMorph contents: 'Full Screen');
-		addMorph: (LayoutMorph newRow
-			addMorph: (VButtonMorph label: 'On' block: [ VDisplay fullScreenOn ]);
-			addMorph: (VButtonMorph label: 'Off' block: [ VDisplay fullScreenOff ]);
-			color: Color transparent
-		);
-		location: (MorphicTranslation withTranslation: 10@10);
-		openInWorld! !
-
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:31'!
+!VFullScreenButtons methodsFor: 'user interface' stamp: 'RMV 6/14/2024 09:46:45'!
 fullScreen: aBoolean
 	Display fullScreenMode: aBoolean.
 	Display newDepth: Display depth! !
 
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:49'!
+!VFullScreenButtons methodsFor: 'user interface' stamp: 'RMV 6/14/2024 09:46:52'!
 fullScreenOff
 	self fullScreen: false! !
 
-!VDisplay class methodsFor: 'user interface' stamp: 'RMV 6/12/2024 19:05:58'!
+!VFullScreenButtons methodsFor: 'user interface' stamp: 'RMV 6/14/2024 09:47:07'!
 fullScreenOn
 	self fullScreen: true! !
+
+!VFullScreenButtons methodsFor: 'initialization' stamp: 'RMV 6/14/2024 09:49:28'!
+initialize
+	"renders buttons for setting full screen on or off"
+
+	LayoutMorph newColumn
+		addMorph: (LabelMorph contents: 'Full Screen');
+		addMorph: (LayoutMorph newRow
+			addMorph: (VButtonMorph label: 'On' block: [ self fullScreenOn ]);
+			addMorph: (VButtonMorph label: 'Off' block: [ self fullScreenOff ]);
+			color: Color transparent
+		);
+		location: (MorphicTranslation withTranslation: 10@10);
+		openInWorld! !
 
 !VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:38:38'!
 initialize
