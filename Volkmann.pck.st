@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 14 June 2024 at 9:51:11 am'!
+'From Cuis7.1 [latest update: #6452] on 15 June 2024 at 8:36:24 am'!
 'Description '!
-!provides: 'Volkmann' 1 102!
+!provides: 'Volkmann' 1 121!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -74,16 +74,6 @@ Object subclass: #Demo
 Demo class
 	instanceVariableNames: ''!
 
-!classDefinition: #Dog category: #Volkmann!
-Object subclass: #Dog
-	instanceVariableNames: 'breed name'
-	classVariableNames: 'Count'
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'Dog class' category: #Volkmann!
-Dog class
-	instanceVariableNames: ''!
-
 !classDefinition: #Map category: #Volkmann!
 Object subclass: #Map
 	instanceVariableNames: 'dict'
@@ -134,6 +124,16 @@ Object subclass: #Rect
 Rect class
 	instanceVariableNames: 'height width'!
 
+!classDefinition: #TestServer category: #Volkmann!
+Object subclass: #TestServer
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'TestServer class' category: #Volkmann!
+TestServer class
+	instanceVariableNames: ''!
+
 !classDefinition: #TypeDemo category: #Volkmann!
 Object subclass: #TypeDemo
 	instanceVariableNames: ''
@@ -172,6 +172,16 @@ Object subclass: #VDebugMe
 	category: 'Volkmann'!
 !classDefinition: 'VDebugMe class' category: #Volkmann!
 VDebugMe class
+	instanceVariableNames: ''!
+
+!classDefinition: #VDog category: #Volkmann!
+Object subclass: #VDog
+	instanceVariableNames: 'breed name'
+	classVariableNames: 'Count'
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VDog class' category: #Volkmann!
+VDog class
 	instanceVariableNames: ''!
 
 !classDefinition: #VFullScreenButtons category: #Volkmann!
@@ -399,41 +409,6 @@ initialize
 	foo := 1.
 	bar := 2! !
 
-!Dog methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:47:34'!
-initialize
-	super initialize.
-	Count := Count + 1! !
-
-!Dog methodsFor: 'private' stamp: 'RMV 6/12/2024 13:47:54'!
-initializeName: aName breed: aBreed
-	name := aName.
-	breed := aBreed! !
-
-!Dog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:03:03'!
-breed
-	^breed! !
-
-!Dog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:02:57'!
-name
-	^name! !
-
-!Dog methodsFor: 'accessing' stamp: 'RMV 6/13/2024 11:04:24'!
-speak
-	^'bark'! !
-
-!Dog class methodsFor: 'accessing' stamp: 'RMV 6/12/2024 09:45:13'!
-count
-	^Count! !
-
-!Dog class methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:41:45'!
-initialize
-	"This must be explicitly called with Dog initialize."
-	Count := 0! !
-
-!Dog class methodsFor: 'initialization' stamp: 'RMV 6/13/2024 10:50:57'!
-name: aName breed: aBreed
-	^self new initializeName: aName breed: aBreed; beImmutable; yourself! !
-
 !Map methodsFor: 'accessing' stamp: 'RMV 6/10/2024 13:04:32'!
 doesNotUnderstand: aMessage
 	"gets and sets entries based on key and value"
@@ -478,7 +453,7 @@ createDog: req
 deleteDog: req
 	req send200Response: 'deleting'! !
 
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/13/2024 17:00:37'!
+!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/14/2024 11:08:38'!
 retrieveDogs: req
 	| body css html tableRows |
 	
@@ -487,7 +462,7 @@ retrieveDogs: req
 	body print.
 	req method = 'POST' ifTrue: [
 		| dog |
-		dog := Dog name: 'Snoopy' breed: 'Beagle'.
+		dog := VDog name: 'Snoopy' breed: 'Beagle'.
 		dogDict at: #Snoopy put: dog.
 		^ req send200Response: (MyWebServer json: dog)
 	].
@@ -528,18 +503,20 @@ retrieveDogs: req
 updateDog: req
 	req send200Response: 'updating'! !
 
-!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/13/2024 16:01:42'!
+!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/14/2024 15:46:17'!
 initialize
 	"demonstrates using the WebServer class"
 	
 	Transcript clear.
 	dogDict := Dictionary newFrom: {
-		#Comet -> (Dog name: 'Comet' breed: 'Whippet').
-		#Oscar -> (Dog name: 'Oscar' breed: 'German Shorthaired Pointer').
+		#Comet -> (VDog name: 'Comet' breed: 'Whippet').
+		#Oscar -> (VDog name: 'Oscar' breed: 'German Shorthaired Pointer').
 	}.
 	
 	server := WebServer new listenOn: 3000.
-	server addService: '/' action: [ :req | req send200Response: 'Home Page'].
+	"This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory."
+	server addService: '/public' action:[:req| WebServer browseRequest2: req].
+	"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
 	server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!'].
 	"server addService: '/dog' action: [ :req | req send200Response: 'Comet']."
 	server addService: '/dog' action: [ :req | self retrieveDogs: req].
@@ -608,6 +585,13 @@ initializeHeight: aHeight width: aWidth
 !Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:36'!
 height: aHeight width: aWidth
 	^self new initializeHeight: aHeight width: aWidth! !
+
+!TestServer methodsFor: 'initialization' stamp: 'RMV 6/14/2024 18:00:55'!
+initialize
+	
+	WebServer new
+		listenOn: 3000;
+		addService: '/' action: [ :req | req send200Response: 'Hello World2!!' ]! !
 
 !TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
 double: obj
@@ -709,6 +693,41 @@ doMath
 	h := (x squared + y squared) sqrt.
 	^h! !
 
+!VDog methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:47:34'!
+initialize
+	super initialize.
+	Count := Count + 1! !
+
+!VDog methodsFor: 'private' stamp: 'RMV 6/12/2024 13:47:54'!
+initializeName: aName breed: aBreed
+	name := aName.
+	breed := aBreed! !
+
+!VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:03:03'!
+breed
+	^breed! !
+
+!VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:02:57'!
+name
+	^name! !
+
+!VDog methodsFor: 'accessing' stamp: 'RMV 6/13/2024 11:04:24'!
+speak
+	^'bark'! !
+
+!VDog class methodsFor: 'accessing' stamp: 'RMV 6/12/2024 09:45:13'!
+count
+	^Count! !
+
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:41:45'!
+initialize
+	"This must be explicitly called with Dog initialize."
+	Count := 0! !
+
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/13/2024 10:50:57'!
+name: aName breed: aBreed
+	^self new initializeName: aName breed: aBreed; beImmutable; yourself! !
+
 !VFullScreenButtons methodsFor: 'user interface' stamp: 'RMV 6/14/2024 09:46:45'!
 fullScreen: aBoolean
 	Display fullScreenMode: aBoolean.
@@ -736,7 +755,7 @@ initialize
 		location: (MorphicTranslation withTranslation: 10@10);
 		openInWorld! !
 
-!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:38:38'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/15/2024 08:36:22'!
 initialize
 	| size textMorph |
 
@@ -745,6 +764,8 @@ initialize
 	
 	"By default, the message specified by textSetter is only sent when user presses ctrl-s.
 	Send acceptOnCR: true or acceptOnAny: true to change this."
+	"TODO: Consider using TextEntryMorph instead for single-line text inputs.
+	             But how can you be notified when its value change?"
 	textMorph := TextModelMorph
 		textProvider: self
 		textGetter: #name
@@ -854,6 +875,10 @@ initializeHeight: aHeight width: aWidth
 height: aHeight width: aWidth
 	^self new initializeHeight: aHeight width: aWidth! !
 
+!Object methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:53:19'!
+logAs: aString
+	('{1} = {2}' format: {aString. self}) print! !
+
 !Integer methodsFor: '*Volkmann' stamp: 'RMV 6/6/2024 08:07:46'!
 collatz 
 	"answers an OrderedCollection containing the Collatz sequence for this integer"
@@ -895,4 +920,53 @@ label: aString onClick: aBlock
 	btn color: (Color blue); enableLabelColorWith: (Color yellow).
 	^btn
 ! !
-Dog initialize!
+
+!WebServer class methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:59:21'!
+browseFile2: file request: request
+	"Responds with a file back to the original request"
+
+	| extension mimeType resp |
+	extension := (file localName subStrings: '.') at: 2.
+	mimeType := extension = 'html' ifTrue: ['text/html'] ifFalse: ['application/octet-stream'].
+	resp := request newResponse protocol: 'HTTP/1.1' code: 200.
+	resp headerAt: 'Content-Type' put: mimeType.
+	file binary.
+	request sendResponse: resp contentStream: file size: (file size).! !
+
+!WebServer class methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:07:06'!
+browseRequest2: request
+	"Handle an HTTP request for browsing some resource"
+
+	| path fd file directoryEntry fileEntry |
+
+	"Extract the file path from the request"
+	path := request url findTokens: '/'.
+	path ifEmpty: [ ^self browseDir: DirectoryEntry currentDirectory request: request ].
+
+	"Find the directory entry for the resource"
+	fd := path allButLast inject: DirectoryEntry currentDirectory into: [ :dir :part | dir / part ].
+	
+	directoryEntry := fd / path last.
+	directoryEntry exists ifTrue: [
+		"Send file listing. We handle this synchronously for simplicity."
+		self browseDir: directoryEntry request: request.
+		^ self].
+	
+	fileEntry := fd // path last.
+	fileEntry exists
+	ifFalse: [^request send404Response ]
+	ifTrue: [
+		"Send file content. Since files can be large, we fork this off.
+		However, since we forked it, we need to handle two different
+		possible conditions:
+			- closing the file in case of error
+			- handling errors when sending it
+		This makes the code below a bit ugly"
+		[[
+			file := fileEntry readStream.
+			[ self browseFile2: file request: request ]
+				ensure: [ file close ] 	"close file even in case of error"
+		] on: Error do: []				"ignore errors altogether"
+		] fork. 							"fork it"
+	]! !
+VDog initialize!
