@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:11:10 pm'!
+'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:20:20 pm'!
 'Description '!
-!provides: 'Volkmann' 1 160!
+!provides: 'Volkmann' 1 161!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -522,7 +522,7 @@ getDogsAsJson: aRequest
 	
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:11:04'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:20:16'!
 handleDog: aRequest	
 	"handle an HTTP request based on its method"
 	| id parts |
@@ -548,7 +548,6 @@ handleDog: aRequest
 
 	"Get the path parameter value."
 	"TODO: Is this really the best way to do it?"
-	aRequest url logAs: 'url'.
 	parts := aRequest url prefixAndSuffix: $/.
 	id := parts last asNumber.
 
