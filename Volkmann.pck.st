@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 15 June 2024 at 8:36:24 am'!
+'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 3:57:24 pm'!
 'Description '!
-!provides: 'Volkmann' 1 121!
+!provides: 'Volkmann' 1 158!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -124,16 +124,6 @@ Object subclass: #Rect
 Rect class
 	instanceVariableNames: 'height width'!
 
-!classDefinition: #TestServer category: #Volkmann!
-Object subclass: #TestServer
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'TestServer class' category: #Volkmann!
-TestServer class
-	instanceVariableNames: ''!
-
 !classDefinition: #TypeDemo category: #Volkmann!
 Object subclass: #TypeDemo
 	instanceVariableNames: ''
@@ -176,8 +166,8 @@ VDebugMe class
 
 !classDefinition: #VDog category: #Volkmann!
 Object subclass: #VDog
-	instanceVariableNames: 'breed name'
-	classVariableNames: 'Count'
+	instanceVariableNames: 'breed id name'
+	classVariableNames: 'Count LastId'
 	poolDictionaries: ''
 	category: 'Volkmann'!
 !classDefinition: 'VDog class' category: #Volkmann!
@@ -445,31 +435,48 @@ factorial: n
 		ifTrue: 1
 		ifFalse: [n * (Math factorial: n - 1)])! !
 
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:23'!
-createDog: req
-	req send200Response: 'creating'! !
+!MyWebServer methodsFor: 'controlling' stamp: 'RMV 6/17/2024 14:48:28'!
+start
+	| dog1 dog2 |
+	dog1 := VDog name: 'Comet' breed: 'Whippet'.
+	dog2 := VDog name: 'Oscar' breed: 'German Shorthaired Pointer'.
+	dogDict := Dictionary newFrom: {
+		dog1 id -> dog1.
+		dog2 id -> dog2
+	}.
+	server listenOn: 3000! !
 
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:19:11'!
-deleteDog: req
-	req send200Response: 'deleting'! !
+!MyWebServer methodsFor: 'controlling' stamp: 'RMV 6/16/2024 14:57:38'!
+stop
 
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/14/2024 11:08:38'!
-retrieveDogs: req
-	| body css html tableRows |
+	server stopListener! !
+
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:24:07'!
+createDog: aRequest
+ 	| dog |
 	
-	req inspect.
-	body := (req stream) receiveData.
-	body print.
-	req method = 'POST' ifTrue: [
-		| dog |
-		dog := VDog name: 'Snoopy' breed: 'Beagle'.
-		dogDict at: #Snoopy put: dog.
-		^ req send200Response: (MyWebServer json: dog)
+	"Get VDog object from request body. An id will be assigned."
+	dog := VDog fromJson: aRequest stream.
+	
+	"Save the new dog."
+	dogDict at: dog id put: dog.
+	
+	"TODO: This really should return a 201 Created status."
+	^ aRequest send200Response: (Json render: dog)
+! !
+
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:22:49'!
+deleteDog: aRequest id: id
+	"Delete the dog, verifying that a dog with the given id exists."
+	dogDict removeKey: id ifAbsent: [
+		^ aRequest send404Response.
 	].
+	^ aRequest send200Response: ''
+! !
 
-	
-	req inspect.
-	
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 14:35:43'!
+getDogsAsHtml: aRequest
+	| css html tableRows |
 	css := '
 		body { font-family: sans-serif }
 		table { border-collapse: collapse }
@@ -478,7 +485,7 @@ retrieveDogs: req
 			padding: 0.5rem;
 		}
 		th {
-			background-color: orange;
+			background-color: pink;
 		}
 	'.
 	
@@ -497,37 +504,83 @@ retrieveDogs: req
 		}
 	}).
 		
-	req send200Response: html contentType: 'text/html'! !
+	aRequest send200Response: html contentType: 'text/html'
+! !
 
-!MyWebServer methodsFor: 'dogs' stamp: 'RMV 6/11/2024 20:18:56'!
-updateDog: req
-	req send200Response: 'updating'! !
-
-!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/14/2024 15:46:17'!
-initialize
-	"demonstrates using the WebServer class"
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 14:36:04'!
+getDogsAsJson: aRequest
+	| json accept |
+	json := Json render: dogDict asArray.
+	accept := aRequest headerAt: 'Accept'.
+	aRequest send200Response: json contentType: accept
 	
-	Transcript clear.
-	dogDict := Dictionary newFrom: {
-		#Comet -> (VDog name: 'Comet' breed: 'Whippet').
-		#Oscar -> (VDog name: 'Oscar' breed: 'German Shorthaired Pointer').
-	}.
-	
-	server := WebServer new listenOn: 3000.
-	"This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory."
-	server addService: '/public' action:[:req| WebServer browseRequest2: req].
-	"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
-	server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!'].
-	"server addService: '/dog' action: [ :req | req send200Response: 'Comet']."
-	server addService: '/dog' action: [ :req | self retrieveDogs: req].
-	"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
+! !
 
-	'listening on port 3000' print.
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:55:00'!
+handleDog: aRequest	
+	| id parts |
 	
-	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
-	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"! !
+	aRequest method = 'GET' ifTrue: [
+		| accept |
 
-!MyWebServer methodsFor: 'html' stamp: 'RMV 6/12/2024 16:07:53'!
+		accept := aRequest headerAt: 'Accept'. "can also use accept"		accept logAs: 'accept'.
+		
+		(accept includesSubString: 'application/json') ifTrue: [
+			self getDogsAsJson: aRequest.
+			^nil
+		].
+	
+		(accept includesSubString: 'text/html') ifTrue: [
+			self getDogsAsHtml: aRequest.
+			^nil
+		]
+	].
+
+	aRequest method = 'POST' ifTrue: [
+		self createDog: aRequest.
+		^nil
+	].
+
+	"Get the path parameter value."
+	"TODO: Is this really the best way to do it?"
+	aRequest url logAs: 'url'.
+	parts := aRequest url prefixAndSuffix: $/.
+	id := parts last asNumber.
+	id logAs: 'id'.
+
+	aRequest method = 'DELETE' ifTrue: [
+		self deleteDog: aRequest id: id.
+		^nil
+	].
+
+	aRequest method = 'PUT' ifTrue: [
+		self updateDog: aRequest id: id.
+		^nil
+	]! !
+
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:55:32'!
+updateDog: aRequest id: id
+	| dog |
+	
+	"Verify that a dog with the given id exists."
+	dogDict at: id ifAbsent: [
+		^ aRequest send404Response
+	].
+
+	"Get VDog object from request body."
+	dog := VDog fromJson: aRequest stream.
+	dog logAs: 'dog'.
+	
+	"Update its id to match id parameter."
+	dog id: id.
+	
+	"Save the change."
+	dogDict at: dog id put: dog.
+	
+	^ aRequest send200Response: (Json render: dog)
+! !
+
+!MyWebServer methodsFor: 'html' stamp: 'RMV 6/16/2024 14:59:00'!
 element: anAssoc
 	"This returns an HTML string.
 	The key in the Association must be a kind of String (such as a Symbol).
@@ -538,6 +591,7 @@ element: anAssoc
 	
 	tag := anAssoc key.
 	content := anAssoc value.
+	"TODO: Add support for attributes."
 	template := '<{1}>{2}</{1}>'.
 	(content isKindOf: String)
 		ifTrue: [^​ template format: { tag. content } ]
@@ -549,24 +603,35 @@ element: anAssoc
 		]
 ! !
 
-!MyWebServer class methodsFor: 'json' stamp: 'RMV 6/13/2024 16:45:43'!
-json: anObject
-	"Answers a JSON string for anObject"
+!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:50:16'!
+initialize
+	"demonstrates using the WebServer class"
 	
-	| index properties template value vars |
+	server := WebServer new.
 	
-	properties := OrderedCollection new.
-	vars := anObject class allInstVarNames.
-	vars do: [ :key |
-		index := vars indexOf: key.
-		value := anObject instVarAt: index.
-		template := (value isKindOf: String)
-			ifTrue: ['"{1}": "{2}']
-			ifFalse: ['"{1}": {2}'].
-		properties add: (template format: { key. value })
-	].
-	^'{', (', ' join: properties), '}'
-! !
+	"This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory."
+	server addService: '/public' action:[:req| WebServer browseRequest2: req].
+	
+	"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
+	"server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!']."
+	
+	server addService: '/hello' action: (MessageSend receiver: self selector: #helloWorld:).
+
+	server
+		addService: '/dog'
+		action: (MessageSend receiver: self selector: #handleDog:)
+		methods: #('DELETE' 'GET' 'POST' 'PUT').
+
+	"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
+	
+	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
+	
+	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"! !
+
+!MyWebServer methodsFor: 'as yet unclassified' stamp: 'RMV 6/16/2024 15:08:09'!
+helloWorld: req
+	
+	req send200Response: 'Hello, World!!'! !
 
 !Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 18:58:56'!
 area
@@ -585,13 +650,6 @@ initializeHeight: aHeight width: aWidth
 !Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:36'!
 height: aHeight width: aWidth
 	^self new initializeHeight: aHeight width: aWidth! !
-
-!TestServer methodsFor: 'initialization' stamp: 'RMV 6/14/2024 18:00:55'!
-initialize
-	
-	WebServer new
-		listenOn: 3000;
-		addService: '/' action: [ :req | req send200Response: 'Hello World2!!' ]! !
 
 !TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
 double: obj
@@ -698,14 +756,24 @@ initialize
 	super initialize.
 	Count := Count + 1! !
 
-!VDog methodsFor: 'private' stamp: 'RMV 6/12/2024 13:47:54'!
-initializeName: aName breed: aBreed
+!VDog methodsFor: 'private' stamp: 'RMV 6/17/2024 15:18:17'!
+id: aNumber
+	"used by MyWebServer deleteDog method"
+	id := aNumber! !
+
+!VDog methodsFor: 'private' stamp: 'RMV 6/16/2024 16:11:52'!
+initializeId: anId name: aName breed: aBreed
+	id := anId.
 	name := aName.
 	breed := aBreed! !
 
 !VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:03:03'!
 breed
 	^breed! !
+
+!VDog methodsFor: 'accessing' stamp: 'RMV 6/16/2024 16:06:12'!
+id
+	^id! !
 
 !VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:02:57'!
 name
@@ -715,18 +783,40 @@ name
 speak
 	^'bark'! !
 
-!VDog class methodsFor: 'accessing' stamp: 'RMV 6/12/2024 09:45:13'!
-count
-	^Count! !
+!VDog methodsFor: 'converting' stamp: 'RMV 6/17/2024 08:25:54'!
+jsonWriteOn: aWriteStream
+	{
+		#id->id.
+		#name->name.
+		#breed->breed
+	} asDictionary jsonWriteOn: aWriteStream
+! !
 
-!VDog class methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:41:45'!
+!VDog class methodsFor: 'accessing' stamp: 'RMV 6/17/2024 14:47:58'!
+nextId
+	LastId := LastId + 1.
+	^LastId! !
+
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:57:14'!
+id: anId name: aName breed: aBreed
+	^self new initializeId: anId name: aName breed: aBreed! !
+
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 14:16:15'!
 initialize
 	"This must be explicitly called with Dog initialize."
-	Count := 0! !
+	LastId := 0! !
 
-!VDog class methodsFor: 'initialization' stamp: 'RMV 6/13/2024 10:50:57'!
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:57:19'!
 name: aName breed: aBreed
-	^self new initializeName: aName breed: aBreed; beImmutable; yourself! !
+	^self new initializeId: (VDog nextId) name: aName breed: aBreed! !
+
+!VDog class methodsFor: 'converting' stamp: 'RMV 6/17/2024 14:09:02'!
+fromJson: aStream
+	| jsonObject newId oldId |
+	jsonObject := Json readFrom: aStream.	oldId := jsonObject at: #id.
+	newId := oldId isNil ifTrue: [ VDog nextId ] ifFalse: [ oldId ].
+	^VDog id: newId name: (jsonObject at: #name) breed: (jsonObject at: #breed)
+! !
 
 !VFullScreenButtons methodsFor: 'user interface' stamp: 'RMV 6/14/2024 09:46:45'!
 fullScreen: aBoolean
@@ -755,7 +845,7 @@ initialize
 		location: (MorphicTranslation withTranslation: 10@10);
 		openInWorld! !
 
-!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/15/2024 08:36:22'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:38:38'!
 initialize
 	| size textMorph |
 
@@ -764,8 +854,6 @@ initialize
 	
 	"By default, the message specified by textSetter is only sent when user presses ctrl-s.
 	Send acceptOnCR: true or acceptOnAny: true to change this."
-	"TODO: Consider using TextEntryMorph instead for single-line text inputs.
-	             But how can you be notified when its value change?"
 	textMorph := TextModelMorph
 		textProvider: self
 		textGetter: #name
