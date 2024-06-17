@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 3:57:24 pm'!
+'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:05:06 pm'!
 'Description '!
-!provides: 'Volkmann' 1 158!
+!provides: 'Volkmann' 1 159!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -451,7 +451,7 @@ stop
 
 	server stopListener! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:24:07'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:03:28'!
 createDog: aRequest
  	| dog |
 	
@@ -462,7 +462,7 @@ createDog: aRequest
 	dogDict at: dog id put: dog.
 	
 	"TODO: This really should return a 201 Created status."
-	^ aRequest send200Response: (Json render: dog)
+	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
 ! !
 
 !MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:22:49'!
@@ -507,12 +507,11 @@ getDogsAsHtml: aRequest
 	aRequest send200Response: html contentType: 'text/html'
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 14:36:04'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:04:02'!
 getDogsAsJson: aRequest
-	| json accept |
+	| json |
 	json := Json render: dogDict asArray.
-	accept := aRequest headerAt: 'Accept'.
-	aRequest send200Response: json contentType: accept
+	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
 	
 ! !
 
@@ -558,7 +557,7 @@ handleDog: aRequest
 		^nil
 	]! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:55:32'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:04:14'!
 updateDog: aRequest id: id
 	| dog |
 	
@@ -577,7 +576,7 @@ updateDog: aRequest id: id
 	"Save the change."
 	dogDict at: dog id put: dog.
 	
-	^ aRequest send200Response: (Json render: dog)
+	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
 ! !
 
 !MyWebServer methodsFor: 'html' stamp: 'RMV 6/16/2024 14:59:00'!
