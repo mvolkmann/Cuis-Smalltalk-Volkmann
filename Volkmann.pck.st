@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:05:06 pm'!
+'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:11:10 pm'!
 'Description '!
-!provides: 'Volkmann' 1 159!
+!provides: 'Volkmann' 1 160!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -451,7 +451,7 @@ stop
 
 	server stopListener! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:03:28'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:08:49'!
 createDog: aRequest
  	| dog |
 	
@@ -461,16 +461,19 @@ createDog: aRequest
 	"Save the new dog."
 	dogDict at: dog id put: dog.
 	
+	"Return the new dog as JSON."
 	"TODO: This really should return a 201 Created status."
 	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:22:49'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:09:18'!
 deleteDog: aRequest id: id
 	"Delete the dog, verifying that a dog with the given id exists."
 	dogDict removeKey: id ifAbsent: [
 		^ aRequest send404Response.
 	].
+
+	"Return an empty response."
 	^ aRequest send200Response: ''
 ! !
 
@@ -507,28 +510,31 @@ getDogsAsHtml: aRequest
 	aRequest send200Response: html contentType: 'text/html'
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:04:02'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:08:33'!
 getDogsAsJson: aRequest
 	| json |
+	
+	"Create a JSON array from the dog Dictionary."
 	json := Json render: dogDict asArray.
+	
+	"Return the JSON."
 	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
 	
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 15:55:00'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:11:04'!
 handleDog: aRequest	
+	"handle an HTTP request based on its method"
 	| id parts |
 	
 	aRequest method = 'GET' ifTrue: [
 		| accept |
 
-		accept := aRequest headerAt: 'Accept'. "can also use accept"		accept logAs: 'accept'.
-		
+		accept := aRequest headerAt: 'Accept'. "can also use accept"
 		(accept includesSubString: 'application/json') ifTrue: [
 			self getDogsAsJson: aRequest.
 			^nil
 		].
-	
 		(accept includesSubString: 'text/html') ifTrue: [
 			self getDogsAsHtml: aRequest.
 			^nil
@@ -545,7 +551,6 @@ handleDog: aRequest
 	aRequest url logAs: 'url'.
 	parts := aRequest url prefixAndSuffix: $/.
 	id := parts last asNumber.
-	id logAs: 'id'.
 
 	aRequest method = 'DELETE' ifTrue: [
 		self deleteDog: aRequest id: id.
@@ -557,7 +562,7 @@ handleDog: aRequest
 		^nil
 	]! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:04:14'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:09:01'!
 updateDog: aRequest id: id
 	| dog |
 	
@@ -576,6 +581,7 @@ updateDog: aRequest id: id
 	"Save the change."
 	dogDict at: dog id put: dog.
 	
+	"Return the updated dog as JSON."
 	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
 ! !
 
