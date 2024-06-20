@@ -1,8 +1,18 @@
-'From Cuis7.1 [latest update: #6452] on 17 June 2024 at 4:20:20 pm'!
+'From Cuis7.1 [latest update: #6452] on 18 June 2024 at 4:17:11 pm'!
 'Description '!
-!provides: 'Volkmann' 1 161!
+!provides: 'Volkmann' 1 170!
 SystemOrganization addCategory: #Volkmann!
 
+
+!classDefinition: #OutOfBoundsException category: #Volkmann!
+Error subclass: #OutOfBoundsException
+	instanceVariableNames: 'lowerBound upperBound'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'OutOfBoundsException class' category: #Volkmann!
+OutOfBoundsException class
+	instanceVariableNames: ''!
 
 !classDefinition: #VButtonMorph category: #Volkmann!
 PluggableButtonMorph subclass: #VButtonMorph
@@ -194,6 +204,16 @@ Object subclass: #VGreet
 VGreet class
 	instanceVariableNames: ''!
 
+!classDefinition: #VScore category: #Volkmann!
+Object subclass: #VScore
+	instanceVariableNames: 'lowerBound score upperBound'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VScore class' category: #Volkmann!
+VScore class
+	instanceVariableNames: ''!
+
 !classDefinition: #VShape category: #Volkmann!
 Object subclass: #VShape
 	instanceVariableNames: ''
@@ -224,6 +244,20 @@ VShape subclass: #VRectangle
 VRectangle class
 	instanceVariableNames: 'height width'!
 
+!classDefinition: #VWebClientDemo category: #Volkmann!
+Object subclass: #VWebClientDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'VWebClientDemo class' category: #Volkmann!
+VWebClientDemo class
+	instanceVariableNames: ''!
+
+
+!OutOfBoundsException commentStamp: 'RMV 6/18/2024 15:29:06' prior: 0!
+This demonstrates defining a custom exception.
+It is used by the VScore class.!
 
 !Accessible commentStamp: 'RMV 6/12/2024 08:20:21' prior: 0!
 Inherit from this class to make all instance variables accessible (get and set) via doesNotUnderstand.!
@@ -245,6 +279,17 @@ This represents a 2D circle described by only its radius.!
 
 !VRectangle commentStamp: 'RMV 6/6/2024 08:40:31' prior: 0!
 This represents a 2D rectangle described by only its height and width.!
+
+!OutOfBoundsException methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 15:42:35'!
+initializeLower: aLower upper: anUpper
+	super initialize.
+	lowerBound := aLower.
+	upperBound := anUpper! !
+
+!OutOfBoundsException class methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 15:13:30'!
+lower: aLower upper: anUpper
+
+	^self new initializeLower: aLower upper: anUpper! !
 
 !VButtonMorph methodsFor: 'as yet unclassified' stamp: 'RMV 6/12/2024 19:11:23'!
 drawEmbossedLabelOn: aCanvas
@@ -451,9 +496,9 @@ stop
 
 	server stopListener! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:08:49'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 09:06:21'!
 createDog: aRequest
- 	| dog |
+ 	| dog res |
 	
 	"Get VDog object from request body. An id will be assigned."
 	dog := VDog fromJson: aRequest stream.
@@ -462,11 +507,13 @@ createDog: aRequest
 	dogDict at: dog id put: dog.
 	
 	"Return the new dog as JSON."
-	"TODO: This really should return a 201 Created status."
-	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
+	res := WebResponse protocol: aRequest protocol code: 201. "Created"
+	res headerAt: 'Content-Type' put: 'application/json; charset=utf-8'.
+	^ aRequest sendResponse: res content: (Json render: dog)
+
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:09:18'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 08:53:19'!
 deleteDog: aRequest id: id
 	"Delete the dog, verifying that a dog with the given id exists."
 	dogDict removeKey: id ifAbsent: [
@@ -522,44 +569,37 @@ getDogsAsJson: aRequest
 	
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:20:16'!
+!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 09:22:21'!
 handleDog: aRequest	
 	"handle an HTTP request based on its method"
-	| id parts |
 	
-	aRequest method = 'GET' ifTrue: [
-		| accept |
-
-		accept := aRequest headerAt: 'Accept'. "can also use accept"
-		(accept includesSubString: 'application/json') ifTrue: [
-			self getDogsAsJson: aRequest.
-			^nil
+	| id method |
+	
+	method := aRequest method.
+	
+	(#('DELETE' 'PUT') includes: method) ifTrue: [
+		"Get the path parameter value."
+		"TODO: Is this really the best way to do it?"
+		| parts |
+		parts := aRequest url prefixAndSuffix: $/.
+		id := [parts last asNumber] on: Error do: [ :e |
+			| res |
+			res := WebResponse protocol: aRequest protocol code: 400.
+			^ aRequest sendResponse: res content: e messageText
 		].
-		(accept includesSubString: 'text/html') ifTrue: [
-			self getDogsAsHtml: aRequest.
-			^nil
-		]
 	].
 
-	aRequest method = 'POST' ifTrue: [
-		self createDog: aRequest.
-		^nil
-	].
-
-	"Get the path parameter value."
-	"TODO: Is this really the best way to do it?"
-	parts := aRequest url prefixAndSuffix: $/.
-	id := parts last asNumber.
-
-	aRequest method = 'DELETE' ifTrue: [
-		self deleteDog: aRequest id: id.
-		^nil
-	].
-
-	aRequest method = 'PUT' ifTrue: [
-		self updateDog: aRequest id: id.
-		^nil
-	]! !
+	method caseOf: {
+		['GET'] -> [ | accept |
+			accept := aRequest headerAt: 'Accept'.
+			(accept includesSubString: 'application/json') ifTrue: [
+ 				^self getDogsAsJson: aRequest].
+ 			(accept includesSubString: 'text/html') ifTrue: [
+ 				^self getDogsAsHtml: aRequest]].
+		['POST'] -> [self createDog: aRequest].
+ 		['DELETE'] -> [self deleteDog: aRequest id: id value].
+		['PUT'] -> [self updateDog: aRequest id: id value]
+ 	}! !
 
 !MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:09:01'!
 updateDog: aRequest id: id
@@ -937,6 +977,27 @@ buttonDemo
 	layout openInWorld.
 	^layout.! !
 
+!VScore methodsFor: 'accessing' stamp: 'RMV 6/18/2024 15:15:32'!
+score
+	"Answer the value of score"
+
+	^ score! !
+
+!VScore methodsFor: 'accessing' stamp: 'RMV 6/18/2024 15:58:09'!
+score: aNumber
+	"Set the value of score"
+
+	| ex |
+	ex := OutOfBoundsException lower: lowerBound upper: upperBound.
+	aNumber <  lowerBound ifTrue: [ ex signal: 'too low' ].
+	aNumber > upperBound ifTrue: [ ex signal: 'too high' ].
+	score := aNumber! !
+
+!VScore methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 15:57:33'!
+initialize
+	lowerBound := 0.
+	upperBound := 10! !
+
 !VShape methodsFor: 'evaluating' stamp: 'RMV 6/2/2024 08:27:29'!
 area
 	"answers the area of the shape"
@@ -966,6 +1027,13 @@ initializeHeight: aHeight width: aWidth
 !VRectangle class methodsFor: 'instance creation' stamp: 'RMV 6/1/2024 18:57:24'!
 height: aHeight width: aWidth
 	^self new initializeHeight: aHeight width: aWidth! !
+
+!VWebClientDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 08:44:13'!
+initialize
+	| res |
+	
+	res := WebClient httpGet: 'https://mvolkmann.github.io'.
+	res inspect! !
 
 !Object methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:53:19'!
 logAs: aString
