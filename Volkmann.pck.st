@@ -1,7 +1,8 @@
-'From Cuis7.1 [latest update: #6452] on 18 June 2024 at 4:17:11 pm'!
+'From Cuis7.1 [latest update: #6452] on 24 June 2024 at 6:50:27 pm'!
 'Description '!
-!provides: 'Volkmann' 1 170!
+!provides: 'Volkmann' 1 176!
 SystemOrganization addCategory: #Volkmann!
+SystemOrganization addCategory: #'Volkmann-Text'!
 
 
 !classDefinition: #OutOfBoundsException category: #Volkmann!
@@ -22,6 +23,16 @@ PluggableButtonMorph subclass: #VButtonMorph
 	category: 'Volkmann'!
 !classDefinition: 'VButtonMorph class' category: #Volkmann!
 VButtonMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #VimEditor category: #'Volkmann-Text'!
+SmalltalkEditor subclass: #VimEditor
+	instanceVariableNames: 'mode'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann-Text'!
+!classDefinition: 'VimEditor class' category: #'Volkmann-Text'!
+VimEditor class
 	instanceVariableNames: ''!
 
 !classDefinition: #BlockTests category: #Volkmann!
@@ -133,6 +144,16 @@ Object subclass: #Rect
 !classDefinition: 'Rect class' category: #Volkmann!
 Rect class
 	instanceVariableNames: 'height width'!
+
+!classDefinition: #TextEntryMorphDemo category: #Volkmann!
+Object subclass: #TextEntryMorphDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'TextEntryMorphDemo class' category: #Volkmann!
+TextEntryMorphDemo class
+	instanceVariableNames: ''!
 
 !classDefinition: #TypeDemo category: #Volkmann!
 Object subclass: #TypeDemo
@@ -271,6 +292,9 @@ This is a playground for defining math functions.!
 !MyWebServer commentStamp: 'RMV 6/12/2024 12:32:37' prior: 0!
 This class demonstrates using the WebClient package.!
 
+!VDog commentStamp: 'RMV 6/22/2024 20:06:39' prior: 0!
+Instances of this class describe a dog.!
+
 !VShape commentStamp: 'RMV 6/6/2024 08:41:12' prior: 0!
 This is an abstract class for shapes that can compute their area.!
 
@@ -280,16 +304,16 @@ This represents a 2D circle described by only its radius.!
 !VRectangle commentStamp: 'RMV 6/6/2024 08:40:31' prior: 0!
 This represents a 2D rectangle described by only its height and width.!
 
-!OutOfBoundsException methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 15:42:35'!
-initializeLower: aLower upper: anUpper
+!OutOfBoundsException methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:50:51'!
+setLower: aLower upper: anUpper
 	super initialize.
 	lowerBound := aLower.
 	upperBound := anUpper! !
 
-!OutOfBoundsException class methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 15:13:30'!
+!OutOfBoundsException class methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:50:51'!
 lower: aLower upper: anUpper
 
-	^self new initializeLower: aLower upper: anUpper! !
+	^self new setLower: aLower upper: anUpper! !
 
 !VButtonMorph methodsFor: 'as yet unclassified' stamp: 'RMV 6/12/2024 19:11:23'!
 drawEmbossedLabelOn: aCanvas
@@ -347,6 +371,50 @@ label: aString block: aBlock
 	button morphWidth: (button morphWidth + 20).
 	^ button
 ! !
+
+!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:40:20'!
+escapeKey: aKeyboardEvent
+	| inCommandMode |
+	inCommandMode := mode = 'command'.
+	inCommandMode ifFalse: [ mode := 'command' ].
+	"Hopefully returning false means that a superclass can process the event."
+	^ inCommandMode not.! !
+
+!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:39:02'!
+iKey: aKeyboardEvent
+	| inCommandMode |
+	inCommandMode := mode = 'command'.
+	inCommandMode ifTrue: [ mode := 'insert' ].
+	"Hopefully returning false means that a superclass can process the event."
+	^ inCommandMode! !
+
+!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:47:55'!
+initialize
+	mode := 'insert'! !
+
+!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:39:42'!
+xKey: aKeyboardEvent
+	| inCommandMode |
+	inCommandMode := mode = 'command'.
+	inCommandMode ifTrue: [ 'delete character under cursor' print  ].
+	"Hopefully returning false means that a superclass can process the event."
+	^ inCommandMode.! !
+
+!VimEditor class methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:44:39'!
+initializeShortcuts
+	super initializeShortcuts.	
+	shortcuts
+          at: 27 + 1
+          put: #switchToCommandMode:.
+      "escape key - when in insert mode, switch to command mode"
+      shortcuts
+          at: 105 + 1
+          put: #xKey:.
+      "i key - when in command mode, switch to insert mode"
+      shortcuts
+          at: 120 + 1
+          put: #xKey:.
+      "x key - when in command mode, delete character under cursor"! !
 
 !BlockTests methodsFor: 'testing' stamp: 'RMV 6/3/2024 19:30:53'!
 testMultipleArgBlock
@@ -686,14 +754,41 @@ initialize
 	height := 1.
 	width := 1! !
 
-!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:45'!
-initializeHeight: aHeight width: aWidth
+!Rect methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:47:02'!
+setHeight: aHeight width: aWidth
 	height := aHeight.
 	width := aWidth! !
 
-!Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/7/2024 19:01:36'!
+!Rect class methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:47:35'!
 height: aHeight width: aWidth
-	^self new initializeHeight: aHeight width: aWidth! !
+	^self new setHeight: aHeight width: aWidth! !
+
+!TextEntryMorphDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/22/2024 09:18:37'!
+initialize
+	| button extent label textEntry |
+	
+	label := LabelMorph new contents: 'My Label'.
+	"TODO: How can I change the color of the label text?"
+	
+	textEntry := TextEntryMorph contents: ''.
+	extent := textEntry morphExtent.
+	textEntry morphExtent: 200 @ extent y.	
+	textEntry crAction: [textEntry value print].
+
+	button := VButtonMorph new
+	  color: Color yellow;
+	  label: 'Press Me';
+	  labelColor: Color red;
+	  model: [ textEntry value print ];
+	  action: #value.	
+	
+	LayoutMorph new
+		beColumn;
+		addMorph: label;
+		addMorph: textEntry;
+		addMorph: button;
+		separation: 10;
+		openInHand.! !
 
 !TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
 double: obj
@@ -751,49 +846,52 @@ year: anObject
 
 	year := anObject! !
 
-!VButtonDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:42:21'!
+!VButtonDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 07:52:07'!
 initialize
 	"demonstrates using of the custom class VButtonMorph"
-
 	| decBtn incBtn label layout |
+
+
 	label := LabelMorph new
-		  contents: '0';
-		  color: Color white.
+		contents: '0';
+		color: Color white.
 	decBtn := VButtonMorph new
-		  color: Color yellow;
-		  label: 'Decrement';
-		  labelColor: Color red;
-		  model: [ label contents: (label contents asNumber - 1) asString ];
-		  action: #value.
+		color: Color yellow;
+		label: 'Decrement';
+		labelColor: Color red;
+		model: [ label contents: (label contents asNumber - 1) asString ];
+		action: #value.
 	incBtn := VButtonMorph new
-		  color: Color yellow;
-		  label: 'Increment';
-		  labelColor: Color green;
-		  model: [ label contents: (label contents asNumber + 1) asString ];
-		  action: #value.
+		color: Color yellow;
+		label: 'Increment';
+		labelColor: Color green;
+		model: [ label contents: (label contents asNumber + 1) asString ];
+		action: #value.
 	layout := LayoutMorph new
 		addMorph: decBtn;
 		addMorph: label;
 		addMorph: incBtn;
-		"color: Color transparent ;"
 		separation: 10;
-		location: (MorphicTranslation withTranslation: 70@70);
- 		rotateBy: 15 degreesToRadians;
+		location: (MorphicTranslation withTranslation: 70 @ 70);
+		rotateBy: 15 degreesToRadians;
 		scale: 1.5.
-
+	"color: Color transparent ;"
 	"Add horizontal padding in buttons."
-	decBtn morphWidth: (incBtn morphWidth + 20).
-	incBtn morphWidth: (incBtn morphWidth + 20).
-	
-	layout openInWorld! !
+	decBtn morphWidth: incBtn morphWidth + 20.
+	incBtn morphWidth: incBtn morphWidth + 20.
+	layout openInWorld.! !
 
-!VDebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 6/13/2024 15:18:54'!
+!VDebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 20:41:14'!
 doMath
-	| h x y |
+
+| h x y |
+
+
 	x := 3.
 	y := 4.
-	h := (x squared + y squared) sqrt.
-	^h! !
+	h := (x squared +
+	y squared) sqrt.
+				^ h.! !
 
 !VDog methodsFor: 'initialization' stamp: 'RMV 6/12/2024 10:47:34'!
 initialize
@@ -805,8 +903,8 @@ id: aNumber
 	"used by MyWebServer deleteDog method"
 	id := aNumber! !
 
-!VDog methodsFor: 'private' stamp: 'RMV 6/16/2024 16:11:52'!
-initializeId: anId name: aName breed: aBreed
+!VDog methodsFor: 'private' stamp: 'RMV 6/23/2024 09:46:32'!
+setId: anId name: aName breed: aBreed
 	id := anId.
 	name := aName.
 	breed := aBreed! !
@@ -827,8 +925,10 @@ name
 speak
 	^'bark'! !
 
-!VDog methodsFor: 'converting' stamp: 'RMV 6/17/2024 08:25:54'!
+!VDog methodsFor: 'converting' stamp: 'RMV 6/22/2024 20:08:30'!
 jsonWriteOn: aWriteStream
+	"writes a JSON representation of this object to a given stream"
+	
 	{
 		#id->id.
 		#name->name.
@@ -841,23 +941,24 @@ nextId
 	LastId := LastId + 1.
 	^LastId! !
 
-!VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:57:14'!
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/23/2024 09:46:32'!
 id: anId name: aName breed: aBreed
-	^self new initializeId: anId name: aName breed: aBreed! !
+	^self new setId: anId name: aName breed: aBreed! !
 
 !VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 14:16:15'!
 initialize
 	"This must be explicitly called with Dog initialize."
 	LastId := 0! !
 
-!VDog class methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:57:19'!
+!VDog class methodsFor: 'initialization' stamp: 'RMV 6/23/2024 09:46:32'!
 name: aName breed: aBreed
-	^self new initializeId: (VDog nextId) name: aName breed: aBreed! !
+	^self new setId: (VDog nextId) name: aName breed: aBreed! !
 
 !VDog class methodsFor: 'converting' stamp: 'RMV 6/17/2024 14:09:02'!
 fromJson: aStream
 	| jsonObject newId oldId |
-	jsonObject := Json readFrom: aStream.	oldId := jsonObject at: #id.
+	jsonObject := Json readFrom: aStream.
+	oldId := jsonObject at: #id.
 	newId := oldId isNil ifTrue: [ VDog nextId ] ifFalse: [ oldId ].
 	^VDog id: newId name: (jsonObject at: #name) breed: (jsonObject at: #breed)
 ! !
@@ -1003,30 +1104,30 @@ area
 	"answers the area of the shape"
 	self subclassResponsibility! !
 
-!VCircle methodsFor: 'as yet unclassified' stamp: 'RMV 6/2/2024 08:39:53'!
-initializeRadius: aNumber
+!VCircle methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:49:04'!
+setRadius: aNumber
 	radius := aNumber! !
 
 !VCircle methodsFor: 'evaluating' stamp: 'RMV 6/2/2024 08:50:11'!
 area
 	^ Float pi * radius * radius! !
 
-!VCircle class methodsFor: 'as yet unclassified' stamp: 'RMV 6/2/2024 08:39:13'!
+!VCircle class methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:49:04'!
 radius: aNumber
-	^self new initializeRadius: aNumber! !
+	^self new setRadius: aNumber! !
 
 !VRectangle methodsFor: 'evaluating' stamp: 'RMV 6/1/2024 18:12:01'!
 area
 	^ height * width! !
 
-!VRectangle methodsFor: 'initialization' stamp: 'RMV 6/1/2024 18:56:49'!
-initializeHeight: aHeight width: aWidth
+!VRectangle methodsFor: 'initialization' stamp: 'RMV 6/23/2024 09:47:02'!
+setHeight: aHeight width: aWidth
 	height := aHeight.
 	width := aWidth! !
 
-!VRectangle class methodsFor: 'instance creation' stamp: 'RMV 6/1/2024 18:57:24'!
+!VRectangle class methodsFor: 'instance creation' stamp: 'RMV 6/23/2024 09:47:02'!
 height: aHeight width: aWidth
-	^self new initializeHeight: aHeight width: aWidth! !
+	^self new setHeight: aHeight width: aWidth! !
 
 !VWebClientDemo methodsFor: 'as yet unclassified' stamp: 'RMV 6/18/2024 08:44:13'!
 initialize
@@ -1080,6 +1181,19 @@ label: aString onClick: aBlock
 	btn color: (Color blue); enableLabelColorWith: (Color yellow).
 	^btn
 ! !
+
+!Transcript class methodsFor: '*Volkmann' stamp: 'RMV 6/23/2024 20:51:26'!
+clearInternal
+
+	accessSemaphore critical: [
+		"Having at least one entry simplifies handling of the entries circular collection"
+		firstIndex := 1.
+		lastIndex := 1.
+		entries atAllPut: nil.
+		entries at: 1 put: 'This is from the Transcript clearInternal method in the *Volkmann category'.
+		unfinishedEntry reset.
+		lastDisplayPosition := 0 ].
+	self display! !
 
 !WebServer class methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:59:21'!
 browseFile2: file request: request
