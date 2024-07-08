@@ -1,9 +1,18 @@
-'From Cuis7.1 [latest update: #6452] on 24 June 2024 at 6:50:27 pm'!
+'From Cuis7.1 [latest update: #6506] on 7 July 2024 at 7:20:24 pm'!
 'Description '!
-!provides: 'Volkmann' 1 176!
+!provides: 'Volkmann' 1 184!
 SystemOrganization addCategory: #Volkmann!
-SystemOrganization addCategory: #'Volkmann-Text'!
 
+
+!classDefinition: #StringLink category: #Volkmann!
+Link subclass: #StringLink
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'StringLink class' category: #Volkmann!
+StringLink class
+	instanceVariableNames: ''!
 
 !classDefinition: #OutOfBoundsException category: #Volkmann!
 Error subclass: #OutOfBoundsException
@@ -23,16 +32,6 @@ PluggableButtonMorph subclass: #VButtonMorph
 	category: 'Volkmann'!
 !classDefinition: 'VButtonMorph class' category: #Volkmann!
 VButtonMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #VimEditor category: #'Volkmann-Text'!
-SmalltalkEditor subclass: #VimEditor
-	instanceVariableNames: 'mode'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann-Text'!
-!classDefinition: 'VimEditor class' category: #'Volkmann-Text'!
-VimEditor class
 	instanceVariableNames: ''!
 
 !classDefinition: #BlockTests category: #Volkmann!
@@ -55,24 +54,34 @@ TestCase subclass: #VShapeTests
 VShapeTests class
 	instanceVariableNames: ''!
 
-!classDefinition: #Accessible category: #Volkmann!
-Object subclass: #Accessible
+!classDefinition: #Animal category: #Volkmann!
+Object subclass: #Animal
+	instanceVariableNames: 'name'
+	classVariableNames: 'Legs'
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'Animal class' category: #Volkmann!
+Animal class
+	instanceVariableNames: ''!
+
+!classDefinition: #Cat category: #Volkmann!
+Animal subclass: #Cat
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'Accessible class' category: #Volkmann!
-Accessible class
+!classDefinition: 'Cat class' category: #Volkmann!
+Cat class
 	instanceVariableNames: ''!
 
-!classDefinition: #Person category: #Volkmann!
-Accessible subclass: #Person
-	instanceVariableNames: 'birthdate country firstName height lastName'
+!classDefinition: #Dog category: #Volkmann!
+Animal subclass: #Dog
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'Person class' category: #Volkmann!
-Person class
+!classDefinition: 'Dog class' category: #Volkmann!
+Dog class
 	instanceVariableNames: ''!
 
 !classDefinition: #BufferQueue category: #Volkmann!
@@ -280,9 +289,6 @@ VWebClientDemo class
 This demonstrates defining a custom exception.
 It is used by the VScore class.!
 
-!Accessible commentStamp: 'RMV 6/12/2024 08:20:21' prior: 0!
-Inherit from this class to make all instance variables accessible (get and set) via doesNotUnderstand.!
-
 !BufferQueue commentStamp: 'RMV 6/6/2024 08:48:26' prior: 0!
 The YouTube video "Cuis-Smalltalk. build a simple but realistic Class into your own Package" at https://www.youtube.com/watch?v=u31DaOEqiG0 describes creating this class.!
 
@@ -303,6 +309,25 @@ This represents a 2D circle described by only its radius.!
 
 !VRectangle commentStamp: 'RMV 6/6/2024 08:40:31' prior: 0!
 This represents a 2D rectangle described by only its height and width.!
+
+!StringLink methodsFor: 'private' stamp: 'RMV 7/7/2024 19:07:29'!
+setValue: aString
+	value := aString! !
+
+!StringLink methodsFor: 'accessing' stamp: 'RMV 7/7/2024 19:08:01'!
+value
+	^value! !
+
+!StringLink methodsFor: 'accessing' stamp: 'RMV 7/7/2024 19:08:14'!
+value: aString
+	value := aString! !
+
+!StringLink class methodsFor: 'instance creation' stamp: 'RMV 7/7/2024 19:08:58'!
+value: aString
+	| link |
+	link := self new.
+	link setValue: aString.
+	^ link! !
 
 !OutOfBoundsException methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:50:51'!
 setLower: aLower upper: anUpper
@@ -372,50 +397,6 @@ label: aString block: aBlock
 	^ button
 ! !
 
-!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:40:20'!
-escapeKey: aKeyboardEvent
-	| inCommandMode |
-	inCommandMode := mode = 'command'.
-	inCommandMode ifFalse: [ mode := 'command' ].
-	"Hopefully returning false means that a superclass can process the event."
-	^ inCommandMode not.! !
-
-!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:39:02'!
-iKey: aKeyboardEvent
-	| inCommandMode |
-	inCommandMode := mode = 'command'.
-	inCommandMode ifTrue: [ mode := 'insert' ].
-	"Hopefully returning false means that a superclass can process the event."
-	^ inCommandMode! !
-
-!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:47:55'!
-initialize
-	mode := 'insert'! !
-
-!VimEditor methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:39:42'!
-xKey: aKeyboardEvent
-	| inCommandMode |
-	inCommandMode := mode = 'command'.
-	inCommandMode ifTrue: [ 'delete character under cursor' print  ].
-	"Hopefully returning false means that a superclass can process the event."
-	^ inCommandMode.! !
-
-!VimEditor class methodsFor: 'as yet unclassified' stamp: 'RMV 6/24/2024 18:44:39'!
-initializeShortcuts
-	super initializeShortcuts.	
-	shortcuts
-          at: 27 + 1
-          put: #switchToCommandMode:.
-      "escape key - when in insert mode, switch to command mode"
-      shortcuts
-          at: 105 + 1
-          put: #xKey:.
-      "i key - when in command mode, switch to insert mode"
-      shortcuts
-          at: 120 + 1
-          put: #xKey:.
-      "x key - when in command mode, delete character under cursor"! !
-
 !BlockTests methodsFor: 'testing' stamp: 'RMV 6/3/2024 19:30:53'!
 testMultipleArgBlock
 	self assert: ([:a :b | a * b] value: 2 value: 3) equals: 6! !
@@ -442,26 +423,19 @@ testRectangleArea
 	self assert: r area isCloseTo: 12.0
 ! !
 
-!Accessible methodsFor: 'as yet unclassified' stamp: 'RMV 6/12/2024 08:19:07'!
-doesNotUnderstand: aMessage
-	"gets or sets an instance variable"
+!Animal class methodsFor: 'as yet unclassified' stamp: 'RMV 6/26/2024 13:04:09'!
+initialize
+Legs := 0.! !
 
-	| argCount getters index key setters |
-	
-	argCount := aMessage numArgs.
-	argCount > 1 ifTrue: [ ^super doesNotUnderstand: aMessage ].
+!Animal class methodsFor: 'as yet unclassified' stamp: 'RMV 6/26/2024 13:04:45'!
+legs
+^Legs.! !
 
-	key := aMessage keywords first.
-	
-	getters := self class allInstVarNames.
-	index := getters indexOf: key.
-	index ifNotZero: [^self instVarAt: index].
-	
-	setters := getters collect: [ :name | name, ':' ].
-	index := setters indexOf: key.
-	index ifNotZero: [^self instVarAt: index put: aMessage arguments first ].
+!Dog methodsFor: 'as yet unclassified' stamp: 'RMV 7/4/2024 16:42:32'!
+speak 'Woof!!' print! !
 
-	^super doesNotUnderstand: aMessage! !
+!Dog class methodsFor: 'as yet unclassified' stamp: 'RMV 7/4/2024 16:42:45'!
+legs ^4! !
 
 !BufferQueue methodsFor: 'accessing' stamp: 'RMV 5/31/2024 16:58:52'!
 count
@@ -881,6 +855,12 @@ initialize
 	incBtn morphWidth: incBtn morphWidth + 20.
 	layout openInWorld.! !
 
+!VDebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 7/3/2024 07:59:41'!
+average: numbers
+    | sum |
+    sum := numbers inject: 0 into: [ :acc :each | acc + each ].
+    ^ sum / numbers size! !
+
 !VDebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 20:41:14'!
 doMath
 
@@ -909,21 +889,19 @@ setId: anId name: aName breed: aBreed
 	name := aName.
 	breed := aBreed! !
 
-!VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:03:03'!
+!VDog methodsFor: 'accessing' stamp: 'RMV 7/1/2024 20:42:14'!
 breed
-	^breed! !
+	"Answers the breed of the dog as a String."
+	^ breed.! !
 
 !VDog methodsFor: 'accessing' stamp: 'RMV 6/16/2024 16:06:12'!
 id
 	^id! !
 
-!VDog methodsFor: 'accessing' stamp: 'RMV 6/11/2024 20:02:57'!
+!VDog methodsFor: 'accessing' stamp: 'RMV 7/1/2024 20:42:35'!
 name
-	^name! !
-
-!VDog methodsFor: 'accessing' stamp: 'RMV 6/13/2024 11:04:24'!
-speak
-	^'bark'! !
+	"Answers the name of the dog as a String."
+	^ name.! !
 
 !VDog methodsFor: 'converting' stamp: 'RMV 6/22/2024 20:08:30'!
 jsonWriteOn: aWriteStream
@@ -935,6 +913,15 @@ jsonWriteOn: aWriteStream
 		#breed->breed
 	} asDictionary jsonWriteOn: aWriteStream
 ! !
+
+!VDog methodsFor: 'as yet unclassified' stamp: 'RMV 6/30/2024 16:32:33'!
+doesNotUnderstand: aMessage
+	(aMessage selector = 'bark:') ifTrue: [
+		| count |
+		count := aMessage arguments first.
+		count isNumber ifTrue: [ ('Woof!! ' repeat: count) print. ^ nil ]
+	].
+	super doesNotUnderstand: aMessage! !
 
 !VDog class methodsFor: 'accessing' stamp: 'RMV 6/17/2024 14:47:58'!
 nextId
@@ -1140,39 +1127,42 @@ initialize
 logAs: aString
 	('{1} = {2}' format: {aString. self}) print! !
 
-!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/6/2024 08:07:46'!
-collatz 
-	"answers an OrderedCollection containing the Collatz sequence for this integer"
+!Collection methodsFor: '*Volkmann' stamp: 'RMV 7/6/2024 11:23:49'!
+asOxfordCommaStringAnd
 
+	^String streamContents: [:stream | self asStringOn: stream delimiter: ', ' last: ', and ']! !
+
+!String methodsFor: '*Volkmann' stamp: 'RMV 6/30/2024 16:23:03'!
+repeat: anInteger
+    | stream |
+    stream := String writeStream.
+    anInteger timesRepeat: [stream nextPutAll: self].
+    ^stream contents! !
+
+!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/29/2024 08:05:08'!
+collatz
+	"Answer an OrderedCollection containing the Collatz sequence for this integer."
 	| next seq |
-	self < 1 ifTrue: [^nil].
+	self < 1 ifTrue: [ ^ nil ].
 	next := self.
 	seq := OrderedCollection new.
 	seq addLast: next.
-	[next = 1] whileFalse: [
-		next := next even ifTrue: [next / 2] ifFalse: [next * 3 + 1].
-		seq addLast: next
-	].
-	^seq! !
+	[ next = 1 ] whileFalse: [
+		next := next even
+			ifTrue: [ next / 2 ]
+			ifFalse: [ next * 3 + 1 ].
+		seq addLast: next ].
+	^ seq.! !
 
-!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/3/2024 20:28:01'!
-factorial
-	"answers the factorial of this integer"
-	^(self = 1
-		ifTrue: 1
-		ifFalse: [self * (self - 1) factorial])! !
-
-!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/3/2024 20:24:09'!
+!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/29/2024 08:03:55'!
 pred
-	"answers the predecessor of this integer"
+	"Answer the predecessor of this integer."
+	^ self - 1.! !
 
-	^ self - 1! !
-
-!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/3/2024 20:24:14'!
+!Integer methodsFor: '*Volkmann' stamp: 'RMV 6/29/2024 08:04:04'!
 succ
-	"answers the successor of this integer"
-
-	^ self + 1! !
+	"Answer the successor of this integer."
+	^ self + 1.! !
 
 !PluggableButtonMorph class methodsFor: '*Volkmann' stamp: 'RMV 6/6/2024 18:28:36'!
 label: aString onClick: aBlock
@@ -1243,4 +1233,5 @@ browseRequest2: request
 		] on: Error do: []				"ignore errors altogether"
 		] fork. 							"fork it"
 	]! !
+Animal initialize!
 VDog initialize!
