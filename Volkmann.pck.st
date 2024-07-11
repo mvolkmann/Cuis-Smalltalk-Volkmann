@@ -1,18 +1,8 @@
-'From Cuis7.1 [latest update: #6506] on 7 July 2024 at 7:20:24 pm'!
+'From Cuis7.1 [latest update: #6506] on 11 July 2024 at 4:22:50 pm'!
 'Description '!
-!provides: 'Volkmann' 1 184!
+!provides: 'Volkmann' 1 194!
 SystemOrganization addCategory: #Volkmann!
 
-
-!classDefinition: #StringLink category: #Volkmann!
-Link subclass: #StringLink
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'StringLink class' category: #Volkmann!
-StringLink class
-	instanceVariableNames: ''!
 
 !classDefinition: #OutOfBoundsException category: #Volkmann!
 Error subclass: #OutOfBoundsException
@@ -32,6 +22,16 @@ PluggableButtonMorph subclass: #VButtonMorph
 	category: 'Volkmann'!
 !classDefinition: 'VButtonMorph class' category: #Volkmann!
 VButtonMorph class
+	instanceVariableNames: ''!
+
+!classDefinition: #CanvasDemo category: #Volkmann!
+PlacedMorph subclass: #CanvasDemo
+	instanceVariableNames: 'extent'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'CanvasDemo class' category: #Volkmann!
+CanvasDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #BlockTests category: #Volkmann!
@@ -310,25 +310,6 @@ This represents a 2D circle described by only its radius.!
 !VRectangle commentStamp: 'RMV 6/6/2024 08:40:31' prior: 0!
 This represents a 2D rectangle described by only its height and width.!
 
-!StringLink methodsFor: 'private' stamp: 'RMV 7/7/2024 19:07:29'!
-setValue: aString
-	value := aString! !
-
-!StringLink methodsFor: 'accessing' stamp: 'RMV 7/7/2024 19:08:01'!
-value
-	^value! !
-
-!StringLink methodsFor: 'accessing' stamp: 'RMV 7/7/2024 19:08:14'!
-value: aString
-	value := aString! !
-
-!StringLink class methodsFor: 'instance creation' stamp: 'RMV 7/7/2024 19:08:58'!
-value: aString
-	| link |
-	link := self new.
-	link setValue: aString.
-	^ link! !
-
 !OutOfBoundsException methodsFor: 'as yet unclassified' stamp: 'RMV 6/23/2024 09:50:51'!
 setLower: aLower upper: anUpper
 	super initialize.
@@ -396,6 +377,23 @@ label: aString block: aBlock
 	button morphWidth: (button morphWidth + 20).
 	^ button
 ! !
+
+!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/11/2024 14:33:29'!
+drawOn: aCanvas
+	| x1 x2 y1 y2 |
+	x1 := 0.
+	y1 := 0.
+	x2 := extent ifNil: [300] ifNotNil: [extent x].
+	y2 := extent ifNil: [150] ifNotNil: [extent y].
+	aCanvas strokeWidth: 10 color: Color red fillColor: Color green do: [
+		aCanvas
+	 		moveTo: x1 @ y1;
+		 	lineTo: x2 @ y2;
+			lineTo: x2 @ y1;
+			lineTo: x1 @ y1;
+			lineTo: x1 @ y2;
+			lineTo: x2 @ y2
+	]! !
 
 !BlockTests methodsFor: 'testing' stamp: 'RMV 6/3/2024 19:30:53'!
 testMultipleArgBlock
@@ -977,12 +975,12 @@ initialize
 		location: (MorphicTranslation withTranslation: 10@10);
 		openInWorld! !
 
-!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:38:38'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 7/10/2024 08:34:59'!
 initialize
 	| size textMorph |
 
 	name := ''.	
-	size := 160@18.
+	size := 170@18.
 	
 	"By default, the message specified by textSetter is only sent when user presses ctrl-s.
 	Send acceptOnCR: true or acceptOnAny: true to change this."
@@ -1172,15 +1170,16 @@ label: aString onClick: aBlock
 	^btn
 ! !
 
-!Transcript class methodsFor: '*Volkmann' stamp: 'RMV 6/23/2024 20:51:26'!
+!Transcript class methodsFor: '*Volkmann' stamp: 'RMV 7/11/2024 16:22:08'!
 clearInternal
 
+	'Transcript clearInterval entered' print.
 	accessSemaphore critical: [
 		"Having at least one entry simplifies handling of the entries circular collection"
 		firstIndex := 1.
 		lastIndex := 1.
 		entries atAllPut: nil.
-		entries at: 1 put: 'This is from the Transcript clearInternal method in the *Volkmann category'.
+		entries at: 1 put: '---'.
 		unfinishedEntry reset.
 		lastDisplayPosition := 0 ].
 	self display! !
