@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6506] on 11 July 2024 at 4:22:50 pm'!
+'From Cuis7.1 [latest update: #6506] on 17 July 2024 at 8:11:30 am'!
 'Description '!
-!provides: 'Volkmann' 1 194!
+!provides: 'Volkmann' 1 199!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -54,36 +54,6 @@ TestCase subclass: #VShapeTests
 VShapeTests class
 	instanceVariableNames: ''!
 
-!classDefinition: #Animal category: #Volkmann!
-Object subclass: #Animal
-	instanceVariableNames: 'name'
-	classVariableNames: 'Legs'
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'Animal class' category: #Volkmann!
-Animal class
-	instanceVariableNames: ''!
-
-!classDefinition: #Cat category: #Volkmann!
-Animal subclass: #Cat
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'Cat class' category: #Volkmann!
-Cat class
-	instanceVariableNames: ''!
-
-!classDefinition: #Dog category: #Volkmann!
-Animal subclass: #Dog
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'Dog class' category: #Volkmann!
-Dog class
-	instanceVariableNames: ''!
-
 !classDefinition: #BufferQueue category: #Volkmann!
 Object subclass: #BufferQueue
 	instanceVariableNames: 'buffer note size'
@@ -102,6 +72,16 @@ Object subclass: #Demo
 	category: 'Volkmann'!
 !classDefinition: 'Demo class' category: #Volkmann!
 Demo class
+	instanceVariableNames: ''!
+
+!classDefinition: #Dog category: #Volkmann!
+Object subclass: #Dog
+	instanceVariableNames: 'breed name'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'Dog class' category: #Volkmann!
+Dog class
 	instanceVariableNames: ''!
 
 !classDefinition: #Map category: #Volkmann!
@@ -289,8 +269,14 @@ VWebClientDemo class
 This demonstrates defining a custom exception.
 It is used by the VScore class.!
 
+!CanvasDemo commentStamp: 'RMV 7/11/2024 19:01:39' prior: 0!
+This class demonstrates implementing a custom morph.!
+
 !BufferQueue commentStamp: 'RMV 6/6/2024 08:48:26' prior: 0!
 The YouTube video "Cuis-Smalltalk. build a simple but realistic Class into your own Package" at https://www.youtube.com/watch?v=u31DaOEqiG0 describes creating this class.!
+
+!Dog commentStamp: '<historical>' prior: 0!
+Instances of this class describe a dog.!
 
 !Math commentStamp: 'RMV 6/6/2024 08:41:42' prior: 0!
 This is a playground for defining math functions.!
@@ -378,13 +364,13 @@ label: aString block: aBlock
 	^ button
 ! !
 
-!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/11/2024 14:33:29'!
+!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/12/2024 08:53:38'!
 drawOn: aCanvas
 	| x1 x2 y1 y2 |
 	x1 := 0.
 	y1 := 0.
-	x2 := extent ifNil: [300] ifNotNil: [extent x].
-	y2 := extent ifNil: [150] ifNotNil: [extent y].
+	x2 := extent x.
+	y2 := extent y.
 	aCanvas strokeWidth: 10 color: Color red fillColor: Color green do: [
 		aCanvas
 	 		moveTo: x1 @ y1;
@@ -394,6 +380,20 @@ drawOn: aCanvas
 			lineTo: x1 @ y2;
 			lineTo: x2 @ y2
 	]! !
+
+!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/13/2024 19:07:23'!
+extent
+	"Answers Point that holds width (x) and height (y) of this Morph."
+	^ extent! !
+
+!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/12/2024 08:31:04'!
+extent: aPoint
+	extent := aPoint! !
+
+!CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 7/12/2024 08:09:15'!
+initialize
+	super initialize.
+	extent := 100 @ 100! !
 
 !BlockTests methodsFor: 'testing' stamp: 'RMV 6/3/2024 19:30:53'!
 testMultipleArgBlock
@@ -420,20 +420,6 @@ testRectangleArea
 	r := VRectangle height: 3.0 width: 4.0.
 	self assert: r area isCloseTo: 12.0
 ! !
-
-!Animal class methodsFor: 'as yet unclassified' stamp: 'RMV 6/26/2024 13:04:09'!
-initialize
-Legs := 0.! !
-
-!Animal class methodsFor: 'as yet unclassified' stamp: 'RMV 6/26/2024 13:04:45'!
-legs
-^Legs.! !
-
-!Dog methodsFor: 'as yet unclassified' stamp: 'RMV 7/4/2024 16:42:32'!
-speak 'Woof!!' print! !
-
-!Dog class methodsFor: 'as yet unclassified' stamp: 'RMV 7/4/2024 16:42:45'!
-legs ^4! !
 
 !BufferQueue methodsFor: 'accessing' stamp: 'RMV 5/31/2024 16:58:52'!
 count
@@ -483,6 +469,23 @@ initialize
 	'inside initialize method' print.
 	foo := 1.
 	bar := 2! !
+
+!Dog methodsFor: 'accessing' stamp: 'RMV 7/17/2024 08:07:20'!
+breed
+	^ breed.! !
+
+!Dog methodsFor: 'accessing' stamp: 'RMV 7/17/2024 08:07:11'!
+name
+	^ name.! !
+
+!Dog methodsFor: 'private' stamp: 'RMV 7/17/2024 08:09:12'!
+setName: nameString breed: breedString
+	name := nameString.
+	breed := breedString! !
+
+!Dog class methodsFor: 'instance creation' stamp: 'RMV 7/17/2024 08:10:07'!
+name: nameString breed: breedString
+	^ self new setName: nameString breed: breedString.! !
 
 !Map methodsFor: 'accessing' stamp: 'RMV 6/10/2024 13:04:32'!
 doesNotUnderstand: aMessage
@@ -1232,5 +1235,4 @@ browseRequest2: request
 		] on: Error do: []				"ignore errors altogether"
 		] fork. 							"fork it"
 	]! !
-Animal initialize!
 VDog initialize!
