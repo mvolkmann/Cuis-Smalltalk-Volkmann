@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6604] on 18 August 2024 at 6:15:50 am'!
+'From Cuis7.1 [latest update: #6635] on 25 August 2024 at 6:53:00 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 397!
+!provides: 'Volkmann' 1 417!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -14,24 +14,14 @@ Error subclass: #OutOfBoundsException
 OutOfBoundsException class
 	instanceVariableNames: ''!
 
-!classDefinition: #EditableLabelMorph category: #Volkmann!
-LayoutMorph subclass: #EditableLabelMorph
-	instanceVariableNames: 'label textEntry'
+!classDefinition: #VolkmannTheme category: #Volkmann!
+Theme subclass: #VolkmannTheme
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'EditableLabelMorph class' category: #Volkmann!
-EditableLabelMorph class
-	instanceVariableNames: ''!
-
-!classDefinition: #Layout2Morph category: #Volkmann!
-LayoutMorph subclass: #Layout2Morph
-	instanceVariableNames: 'useEdgeSpace'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'Layout2Morph class' category: #Volkmann!
-Layout2Morph class
+!classDefinition: 'VolkmannTheme class' category: #Volkmann!
+VolkmannTheme class
 	instanceVariableNames: ''!
 
 !classDefinition: #VButtonMorph category: #Volkmann!
@@ -44,34 +34,34 @@ PluggableButtonMorph subclass: #VButtonMorph
 VButtonMorph class
 	instanceVariableNames: ''!
 
-!classDefinition: #PluggableScroll2Pane category: #Volkmann!
-PluggableScrollPane subclass: #PluggableScroll2Pane
-	instanceVariableNames: 'onExtentChanged'
+!classDefinition: #AlertDialog category: #Volkmann!
+SystemWindow subclass: #AlertDialog
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'PluggableScroll2Pane class' category: #Volkmann!
-PluggableScroll2Pane class
+!classDefinition: 'AlertDialog class' category: #Volkmann!
+AlertDialog class
 	instanceVariableNames: ''!
 
-!classDefinition: #CenteredTextEntryMorph category: #Volkmann!
-TextEntryMorph subclass: #CenteredTextEntryMorph
-	instanceVariableNames: 'padding'
+!classDefinition: #FixedSizeSystemWindow category: #Volkmann!
+SystemWindow subclass: #FixedSizeSystemWindow
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'CenteredTextEntryMorph class' category: #Volkmann!
-CenteredTextEntryMorph class
+!classDefinition: 'FixedSizeSystemWindow class' category: #Volkmann!
+FixedSizeSystemWindow class
 	instanceVariableNames: ''!
 
-!classDefinition: #TextEntry2Morph category: #Volkmann!
-TextEntryMorph subclass: #TextEntry2Morph
-	instanceVariableNames: 'escapeAction'
+!classDefinition: #VTextEntryMorph category: #Volkmann!
+TextEntryMorph subclass: #VTextEntryMorph
+	instanceVariableNames: 'keystrokeAction'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'TextEntry2Morph class' category: #Volkmann!
-TextEntry2Morph class
+!classDefinition: 'VTextEntryMorph class' category: #Volkmann!
+VTextEntryMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #AnimatedMorph category: #Volkmann!
@@ -92,26 +82,6 @@ BoxedMorph subclass: #ArrowKeyBug
 	category: 'Volkmann'!
 !classDefinition: 'ArrowKeyBug class' category: #Volkmann!
 ArrowKeyBug class
-	instanceVariableNames: ''!
-
-!classDefinition: #BasicButtonMorph category: #Volkmann!
-BoxedMorph subclass: #BasicButtonMorph
-	instanceVariableNames: 'fillColor font hoverColor hovered label onClick padding textColor'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'BasicButtonMorph class' category: #Volkmann!
-BasicButtonMorph class
-	instanceVariableNames: 'label onClick'!
-
-!classDefinition: #BasicCheckboxMorph category: #Volkmann!
-BoxedMorph subclass: #BasicCheckboxMorph
-	instanceVariableNames: 'checked fillColor hoverColor hovered onChange'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Volkmann'!
-!classDefinition: 'BasicCheckboxMorph class' category: #Volkmann!
-BasicCheckboxMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #CanvasDemo category: #Volkmann!
@@ -224,6 +194,16 @@ Object subclass: #Demo
 Demo class
 	instanceVariableNames: ''!
 
+!classDefinition: #ExceptionDemo category: #Volkmann!
+Object subclass: #ExceptionDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'ExceptionDemo class' category: #Volkmann!
+ExceptionDemo class
+	instanceVariableNames: ''!
+
 !classDefinition: #Map category: #Volkmann!
 Object subclass: #Map
 	instanceVariableNames: 'dict'
@@ -284,24 +264,24 @@ Object subclass: #Rect
 Rect class
 	instanceVariableNames: 'height width'!
 
-!classDefinition: #Todo category: #Volkmann!
-Object subclass: #Todo
-	instanceVariableNames: 'checkbox label labelFont onDelete onDoneToggle row'
+!classDefinition: #ShortCircuitDemo category: #Volkmann!
+Object subclass: #ShortCircuitDemo
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'Todo class' category: #Volkmann!
-Todo class
+!classDefinition: 'ShortCircuitDemo class' category: #Volkmann!
+ShortCircuitDemo class
 	instanceVariableNames: ''!
 
-!classDefinition: #TodoApp category: #Volkmann!
-Object subclass: #TodoApp
-	instanceVariableNames: 'scrollPane statusLabel todoEntry todos todosPane window titleLabelx'
+!classDefinition: #TextEntryDemo category: #Volkmann!
+Object subclass: #TextEntryDemo
+	instanceVariableNames: 'messageMorph text textModelMorph textEntryMorph'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
-!classDefinition: 'TodoApp class' category: #Volkmann!
-TodoApp class
+!classDefinition: 'TextEntryDemo class' category: #Volkmann!
+TextEntryDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #TypeDemo category: #Volkmann!
@@ -429,20 +409,15 @@ Weather class
 This demonstrates defining a custom exception.
 It is used by the VScore class.!
 
-!Layout2Morph commentStamp: '<historical>' prior: 0!
-This is a subclass of LayoutMorph that adds the instance variable "useEdgeSpace".
-When true, x and y separation are kept between submorphs and the
-edge of our extent, othersize no space is kept between submorphs 
-and our outer edge.!
-
 !VButtonMorph commentStamp: 'RMV 8/4/2024 16:28:53' prior: 0!
 PluggableButtonMorph always uses embossed labels.
 This subclass does not.!
 
-!CenteredTextEntryMorph commentStamp: 'RMV 8/5/2024 16:54:03' prior: 0!
-TextEntryMorph supports single-line text entry,
-but does not center the text vertically.
-This subclass of TextMorph fixes that.!
+!VTextEntryMorph commentStamp: 'rmv 8/25/2024 18:14:03' prior: 0!
+keystrokeAction: aBlock
+	"Sets the action to perform when user presses any key, after regular processing."
+	
+	keystrokeAction := aBlock.!
 
 !ArrowKeyBug commentStamp: '<historical>' prior: 0!
 This class demonstrates implementing a custom morph. TEST!
@@ -501,295 +476,9 @@ lower: aLower upper: anUpper
 
 	^self new setLower: aLower upper: anUpper! !
 
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 19:34:42'!
-color: aColor
-	label ifNotNil: [ label color: aColor ]! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 15:47:43'!
-contents
-	^ label contents! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 15:44:32'!
-contents: aString
-	label contents: aString.
-	textEntry contents: aString.! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 15:44:17'!
-font
-	^ label font! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 15:43:52'!
-font: aFont
-	label font: aFont.
-	textEntry font: aFont.! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 15:13:45'!
-handlesMouseDown: aMouseEvent
-	^ true! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 19:57:25'!
-initialize
-	super initialize.
-	super color: Color transparent.
-	
-	label := LabelMorph new.
-	self addMorph: label.
-	
-	"textEntry := CenteredTextEntryMorph new."
-	textEntry := TextEntry2Morph new.
-	textEntry crAction: [
-		label contents: textEntry contents.
-		textEntry visible: false.
-		label visible: true.
-	].
-	textEntry escapeAction: [
-		textEntry visible: false.
-		label visible: true.
-		textEntry contents: label contents.
-	].
-	textEntry visible: false.
-	self addMorph: textEntry.! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 18:21:47'!
-mouseButton1Down: aMouseEvent localPosition: aPosition
-	| worldPosition |
-	worldPosition := aMouseEvent eventPosition.
-	(label coversPixel: worldPosition) ifTrue: [
-		label visible: (label visible not).
-		textEntry visible: (textEntry visible not).
-	]! !
-
-!EditableLabelMorph methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 16:16:50'!
-text: aString
-	label contents: aString.
-	textEntry contents: aString.! !
-
-!EditableLabelMorph class methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 16:19:07'!
-new
-	"It's necessary to override this method because the
-	superclass LayoutMorph new method triggers an error."
-	^ self newRow! !
-
-!Layout2Morph methodsFor: 'initialization' stamp: 'RMV 8/14/2024 18:33:56'!
-initialize
-	super initialize.
-	useEdgeSpace := true! !
-
-!Layout2Morph methodsFor: 'geometry' stamp: 'RMV 8/14/2024 19:47:20'!
-minimumExtent: cachedValues
-	"Answer size sufficient to frame my submorphs."
-	
-	| width height mle |
-	width  := 0.
-	height := 0.
-	(self direction = #vertical)
-		ifTrue: [ "Column"
-			self submorphsToLayout do: [ :sm |
-				mle := sm minimumLayoutExtent: cachedValues.
-				"use maximum width across submorphs"
-				width := width max: mle x.
-				"sum up submorph heights, including separation"
-				height := height + mle y + self ySeparation.
-			].
-			useEdgeSpace
-				ifTrue: [
-					height := height + self ySeparation. "one side already separated"
-					width := width + (2 * self xSeparation). "separation on each side"
-				]
-				ifFalse: [
-					height := height - self ySeparation. "one side already separated"
-				].
-		]
-		ifFalse: [ "Row"
-			self submorphsToLayout do: [ :sm |
-				mle := sm minimumLayoutExtent: cachedValues.
-				"sum up submorphs width"
-				width := width + mle x + self xSeparation.
-				"use maximum height across submorph"
-				height := height max: mle y.
-			].
-			useEdgeSpace
-				ifTrue: [
-					width := width + self xSeparation. "one side already separated"
-					height := height + (2 * self ySeparation). "separation on each side"
-				]
-				ifFalse: [
-					width := width - self xSeparation. "one side already separated"
-				].
-		].
-
-	^ (width @ height) + self extentBorder! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'RMV 8/14/2024 18:32:47'!
-layoutSubmorphsHorizontallyIn: boundsForLayout
-	"Compute a new layout based on the given layout bounds."
-
-	| visibleSubmorphs gap gapCount widths widthToAllocate leftOver x height y cache |
-	"Preconditions: self isRow & morphExtent >= minimumLayoutExtent"
-	(visibleSubmorphs := self submorphsToLayout reversed  "Display Order")
-		ifEmpty: [ ^ self. "Nothing to layout, besides `sum` below, would fail" ].
-	
-	gap := self xSeparation.
-	gapCount := useEdgeSpace ifTrue: [ visibleSubmorphs size + 1 ] ifFalse: [ visibleSubmorphs size - 1].
-	widthToAllocate := (boundsForLayout width - (gapCount * gap)).
-	"widthToAllocate := (boundsForLayout width - ((visibleSubmorphs size - 1) * gap))."
-	cache := IdentityDictionary new.
-	widths := self widthsFor: visibleSubmorphs within: widthToAllocate minLayoutExtentCache: cache.
-	leftOver := widthToAllocate - widths sum.
-	x := boundsForLayout left + (leftOver * self axisEdgeWeight).
-	useEdgeSpace ifTrue: [ x := x + gap ].
-
-	visibleSubmorphs with: widths do: [ :sm :smWidth |
-		height := self offAxisHeightFor: sm within: boundsForLayout height minLayoutExtentCache: cache.
-		y := self offAxisYOffsetFor: sm within: boundsForLayout height - height.
-		sm fitInto: (x @ (boundsForLayout top + y) extent: smWidth @ height).
-		x := x + smWidth + gap.
-	]! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'KenD 8/15/2024 05:24:55'!
-layoutSubmorphsVerticallyIn: boundsForLayout
-	"Compute a new layout based on the given layout bounds."
-
-	| visibleSubmorphs gap gapCount heights heightToAllocate leftOver y width x cache |
-	"Preconditions: self isRow & morphExtent >= minimumLayoutExtent"
-	(visibleSubmorphs := self submorphsToLayout reversed  "Display Order")
-		ifEmpty: [ ^ self. "Nothing to layout, besides `sum` below, would fail" ].
-
-	gap := self ySeparation.
-	gapCount := useEdgeSpace ifTrue: [ visibleSubmorphs size + 1 ] ifFalse: [ visibleSubmorphs size - 1].
-	heightToAllocate := (boundsForLayout height - (gapCount * gap)).
-	cache := IdentityDictionary new.
-	heights := self heightsFor: visibleSubmorphs within: heightToAllocate minLayoutExtentCache: cache.
-	leftOver := heightToAllocate - heights sum.
-	y := boundsForLayout top + (leftOver * self axisEdgeWeight).
-	useEdgeSpace ifTrue: [ y := y + gap ].
-
-	visibleSubmorphs with: heights do: [ :sm :smHeight |
-		width := self offAxisWidthFor: sm within: boundsForLayout width minLayoutExtentCache: cache.
-		x := self offAxisXOffsetFor: sm within: boundsForLayout width - width.
-		sm fitInto: (boundsForLayout left + x @ y extent: width @ smHeight).
-		y := y + smHeight + gap.
-	]! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'KenD 8/15/2024 05:41:15'!
-offAxisHeightFor: aMorph within: availableHeight minLayoutExtentCache: cache
-	"Answer height for a single morph -- offAxis calculation for a Row"
-	
-	| availableForPropHeight actualPropHeight |
-	availableForPropHeight := useEdgeSpace 
-		ifTrue: [ availableHeight  - (2 * self ySeparation) ]
-		ifFalse: [ availableHeight ].
-	actualPropHeight := (availableForPropHeight * aMorph layoutSpec proportionalLayoutHeight)
-							 max: (aMorph minimumLayoutExtent: cache) y.
-	^ actualPropHeight! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'KenD 8/15/2024 05:42:45'!
-offAxisWidthFor: aMorph within: availableWidth minLayoutExtentCache: cache
-	"Answer width for a single morph -- offAxis calculation for a Column"
-
-	| availableForPropWidth actualPropWidth |
-	availableForPropWidth := useEdgeSpace 
-		ifTrue: [ 	availableWidth - (2 * self xSeparation) ]
-		 ifFalse: [ availableWidth ].
-	actualPropWidth := (availableForPropWidth * aMorph layoutSpec proportionalLayoutWidth)
-						 	max: (aMorph minimumLayoutExtent: cache) x.
-	^ actualPropWidth! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'RMV 8/14/2024 19:30:46'!
-offAxisXOffsetFor: aMorph within: availableWidth
-	"Answer x offset for a single morph -- offAxis calculation for a Column"
-
-	| leftOver offset |
-	leftOver := useEdgeSpace
-		ifTrue: [availableWidth - (2 * self xSeparation)] 
-		ifFalse: [availableWidth].
-	offset := leftOver * aMorph layoutSpec offAxisEdgeWeight. 
-	useEdgeSpace ifTrue: [ ^ self xSeparation + offset ].
-	^ offset! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'RMV 8/14/2024 19:30:50'!
-offAxisYOffsetFor: aMorph within: availableHeight
-	"Answer y offset for a single morph -- offAxis calculation for a Row"
-	
-	| leftOver offset |
-	leftOver := useEdgeSpace
-		ifTrue: [availableHeight - (2 * self ySeparation)] 
-		ifFalse: [availableHeight].
-	offset := leftOver * aMorph layoutSpec offAxisEdgeWeight.
-	useEdgeSpace ifTrue: [ ^ self ySeparation + offset ].
-	^offset! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'RMV 8/14/2024 18:32:08'!
-useEdgeSpace
-	^ useEdgeSpace! !
-
-!Layout2Morph methodsFor: 'layout' stamp: 'RMV 8/14/2024 18:31:59'!
-useEdgeSpace: aBoolean
-	useEdgeSpace := aBoolean! !
-
-!Layout2Morph class methodsFor: 'as yet unclassified' stamp: 'RMV 8/14/2024 19:47:33'!
-example1
-	| withEdge noEdge upSpec downSpec |
-	withEdge := self newRow :: useEdgeSpace: true;  separation: 20.
-	noEdge := self newRow :: useEdgeSpace: false;  separation: 20.
-	upSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 0.
-	upSpec proportionalWidth: 0.8 minimum: 100; proportionalHeight: 0.8 minimum: 100.
-	downSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 1.
-	downSpec proportionalWidth: 0.8 minimum: 100; proportionalHeight: 0.8 minimum: 100.
-	
-	withEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	noEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	withEdge addMorph: (LabelMorph new :: contents: 'WITH Edge').
-	noEdge addMorph: (LabelMorph new :: contents: 'withOUT Edge').
-	withEdge addMorph: (BoxedMorph new :: layoutSpec: downSpec).
-	noEdge addMorph: (BoxedMorph new ::  layoutSpec: downSpec).
-	
-	withEdge openInWorld.
-	noEdge openInWorld.! !
-
-!Layout2Morph class methodsFor: 'examples' stamp: 'RMV 8/15/2024 08:25:48'!
-exampleEdgesColumn
-	"Show 2 cases :1 useEdgeSpace true and 1 false"
-	" self exampleEdgesColumn "
-	| withEdge noEdge upSpec downSpec |
-	withEdge := self newColumn :: useEdgeSpace: true;  separation: 20.
-	noEdge := self newColumn :: useEdgeSpace: false;  separation: 20.
-	upSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 0.
-	upSpec proportionalWidth: 0.8 minimum: 100; proportionalHeight: 0.8 minimum: 100.
-	downSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 1.
-	downSpec proportionalWidth: 0.5 minimum: 100; proportionalHeight: 0.5 minimum: 100.
-	
-	withEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	noEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	withEdge addMorph: (LabelMorph new :: contents: 'WITH Edge').
-	noEdge addMorph: (LabelMorph new :: contents: 'withOUT Edge').
-	withEdge addMorph: (BoxedMorph new :: layoutSpec: downSpec).
-	noEdge addMorph: (BoxedMorph new ::  layoutSpec: downSpec).
-	
-	withEdge openInWorld.
-	noEdge openInWorld.! !
-
-!Layout2Morph class methodsFor: 'examples' stamp: 'KenD 8/15/2024 05:26:38'!
-exampleEdgesRow
-	"Show 2 cases: 1 useEdgeSpace true and 1 false"
-	" self exampleEdgesRow "
-	| withEdge noEdge upSpec downSpec |
-	withEdge := self newRow :: useEdgeSpace: true;  separation: 20.
-	noEdge := self newRow :: useEdgeSpace: false;  separation: 20.
-	upSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 0.
-	upSpec proportionalWidth: 0.8 minimum: 100; proportionalHeight: 0.8 minimum: 100.
-	downSpec := LayoutSpec keepMorphExtent :: offAxisEdgeWeight: 1.
-	downSpec proportionalWidth: 0.5 minimum: 100; proportionalHeight: 0.5 minimum: 100.
-	
-	withEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	noEdge addMorph: (BoxedMorph new :: color: Color blue;  layoutSpec: upSpec).
-	withEdge addMorph: (LabelMorph new :: contents: 'WITH Edge').
-	noEdge addMorph: (LabelMorph new :: contents: 'withOUT Edge').
-	withEdge addMorph: (BoxedMorph new :: layoutSpec: downSpec).
-	noEdge addMorph: (BoxedMorph new ::  layoutSpec: downSpec).
-	
-	withEdge openInWorld.
-	noEdge openInWorld.! !
+!VolkmannTheme methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 11:57:10'!
+embossedButtonLabels
+	^ false! !
 
 !VButtonMorph methodsFor: 'as yet unclassified' stamp: 'RMV 6/12/2024 19:11:23'!
 drawEmbossedLabelOn: aCanvas
@@ -854,143 +543,73 @@ label: aString font: aFont block: aBlock
 	^ button
 ! !
 
-!PluggableScroll2Pane methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 19:08:48'!
-extentChanged: oldExtent
-	super extentChanged: oldExtent.
-	onExtentChanged ifNotNil: [ onExtentChanged value: self morphExtent ].! !
-
-!PluggableScroll2Pane methodsFor: 'as yet unclassified' stamp: 'RMV 8/17/2024 19:08:33'!
-onExtentChanged: aBlock
-	onExtentChanged := aBlock! !
-
-!CenteredTextEntryMorph methodsFor: 'drawing' stamp: 'RMV 8/17/2024 16:16:50'!
-characterIndexAtPoint: aPoint
-	| delta line block f pPoint |
-	delta := padding negated.
-	pPoint := aPoint translatedBy: delta @ delta.
-	f := self fontToUse.
-	line := TextLine
-		start: 1
-		stop: contents size
-		internalSpaces: 0
-		paddingWidth: 0.
-	line
-		rectangle: (0 @ 0 extent: extent);
-		lineHeight: f lineSpacing baseline: f ascent.
-	block := (CharacterBlockScanner new text: (contents asText font: f))
-		defaultFont: f;
-		characterBlockAtPoint: pPoint in: line forCursorPosition: true.
-	^ block stringIndex.! !
-
-!CenteredTextEntryMorph methodsFor: 'drawing' stamp: 'RMV 8/5/2024 16:56:34'!
-displayTextCursorAtX: x top: top bottom: bottom emphasis: anEmphasis on: aCanvas
-	| textCursorColor x1 isBold isItalic x0 h w halfW r d |
-	isBold := anEmphasis allMask: 1.
-	isItalic := anEmphasis allMask: 2.
-	textCursorColor := Theme current textCursor.
-	h := bottom - top.
-	w := isBold
-		ifTrue: [ h // 25 + 2 ]
-		ifFalse: [ h // 30 + 1 ].
-	halfW := w // 2.
-	isItalic
-		ifTrue: [
-			"Keep tweaking if needed!!"
-			d := isBold
-				ifTrue: [ 3 ]
-				ifFalse: [ h // 24 ].
-			x0 := x - (h * 5 // 24) + d.
-			x1 := x + d ]
-		ifFalse: [
-			x0 := x.
-			x1 := x ].
-	x0 < halfW ifTrue: [
-		x1 := x1 - x0 + halfW.
-		x0 := halfW ].
-	r := extent x - halfW - 1.
-	r < x1 ifTrue: [
-		x0 := x0 + r - x1.
-		x1 := r ].
-	textCursorRect := x0 - halfW - 1 @ top corner: x1 + halfW + 1 + 1 @ bottom.
-	aCanvas
-		line: x0 + halfW @ bottom
-		to: x1 + halfW @ (top + w)
-		width: w
-		color: textCursorColor.! !
-
-!CenteredTextEntryMorph methodsFor: 'drawing' stamp: 'RMV 8/6/2024 08:59:44'!
-drawOn: aCanvas
-	aCanvas
-		fillRectangle: (0 @ 0 extent: extent)
-		color: backgroundColor.
-	self hasSelection ifTrue: [ self drawSelectionOn: aCanvas ].
-	self hasTextCursor ifTrue: [ self drawTextCursorOn: aCanvas ].
-	aCanvas
-		drawString: contents
-		at: padding @ padding
-		font: self fontToUse
-		color: color.
-	borderWidth > 0 ifTrue: [
-		aCanvas
-			frameRectangle: (0 @ 0 extent: extent x + 1 @ extent y)
-			color: borderColor
-			borderWidth: borderWidth
-			borderStyleSymbol: #simple ].! !
-
-!CenteredTextEntryMorph methodsFor: 'drawing' stamp: 'RMV 8/6/2024 09:00:58'!
-drawSelectionOn: aCanvas
-	| bottom leftX rightX |
+!AlertDialog methodsFor: 'as yet unclassified' stamp: 'rmv 8/22/2024 20:28:35'!
+initialize 
+	"Initialize me, but remove all the window buttons except Close and all the edge resizers."
+	| toRemove |
 	
-	bottom := self baseFont lineSpacing.
-	leftX := self fontToUse widthOfString: contents from: 1 to: editor startIndex - 1.
-	leftX := leftX min: extent x.
-	rightX := self fontToUse widthOfString: contents from: 1 to: editor stopIndex - 1.
-	rightX := rightX min: extent x.
-
-	aCanvas
-		fillRectangle: (padding + leftX @ padding corner: rightX + padding + 1 @ (padding + bottom + 1))
-		color: (Theme current textHighlightFocused: self hasKeyboardFocus).! !
-
-!CenteredTextEntryMorph methodsFor: 'drawing' stamp: 'RMV 8/6/2024 09:01:14'!
-drawTextCursorOn: aCanvas
-	| bottom x |
-	showTextCursor ifTrue: [
-		bottom := self baseFont lineSpacing.
-		x := self fontToUse
-			widthOfString: contents
-			from: 1
-			to: editor startIndex - 1.
-		self
-			displayTextCursorAtX: x + padding
-			top: padding - 2
-			bottom: padding + bottom - 2
-			emphasis: emphasis
-			on: aCanvas ].! !
-
-!CenteredTextEntryMorph methodsFor: 'initialization' stamp: 'RMV 8/17/2024 18:49:58'!
-initialize
-	| height lineHeight width |
 	super initialize.
-	width := self morphExtent x.
-	height := self morphExtent y.
-	lineHeight := self baseFont lineSpacing.
-	padding := (height - lineHeight) / 2.
-	self layoutSpec: (LayoutSpec fixedWidth: width fixedHeight: height)
+	
+	"submorphs in the Morph class are held in an Array.
+	Adding and removing a submorph is not very efficient.
+	It is more efficient to add the morphs to remove to an OrderedCollection
+	and then remove all of them at once by sending #removeAllMorphsIn:"
+	toRemove := OrderedCollection new.
+	
+	self submorphsDo: [ :submorph |
+		submorph isKindOf: WindowEdgeAdjustingMorph ::
+			ifTrue: [ toRemove add: submorph ]
+			ifFalse: [
+				submorph isKindOf: PluggableButtonMorph ::
+					ifTrue: [
+						submorph actionSelector ~= #closeBoxHit ::
+							ifTrue: [ toRemove add: submorph ]
+					]
+			]
+	].
+
+	self removeAllMorphsIn: toRemove.
 ! !
 
-!TextEntry2Morph methodsFor: 'accessing' stamp: 'RMV 8/17/2024 18:31:52'!
-escapeAction
-	^ escapeAction! !
+!AlertDialog class methodsFor: 'as yet unclassified' stamp: 'rmv 8/20/2024 17:02:14'!
+message: aString
+	| extent instance layout |
+	layout := LayoutMorph newRow separation: 20; axisEdgeWeight: 0.5.
+	layout addMorph: (LabelMorph contents: aString).
+	instance := AlertDialog new
+		labelString: 'Alert';
+		addMorph: layout;
+		openInWorld.
+	extent := instance minimumExtent.
+	extent x < 170 ifTrue: [ extent := 200 @ extent y ].
+	instance morphExtent: extent.
+	^ instance.! !
 
-!TextEntry2Morph methodsFor: 'accessing' stamp: 'RMV 8/17/2024 18:32:07'!
-escapeAction: aBlock
-	escapeAction := aBlock! !
+!FixedSizeSystemWindow methodsFor: 'initialization' stamp: 'rmv 8/21/2024 20:58:49'!
+initialize 
+	"Initialize me, but remove all the window buttons except Close and all the edge resizers."
+	super initialize.
+	self submorphsDo: [ :submorph |
+		submorph isKindOf: WindowEdgeAdjustingMorph ::
+			ifTrue: [ self removeMorph: submorph ]
+			ifFalse: [
+				submorph isKindOf: PluggableButtonMorph ::
+					ifTrue: [
+						submorph actionSelector ~= #closeBoxHit ::
+							ifTrue: [ self removeMorph: submorph ]
+					]
+			]
+	]
+! !
 
-!TextEntry2Morph methodsFor: 'event handling' stamp: 'RMV 8/17/2024 18:38:10'!
+!VTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 18:29:33'!
 keyStroke: aKeyboardEvent
-	(aKeyboardEvent isEsc and: (escapeAction isNil not))
-		ifTrue: [	 escapeAction value ]
-		ifFalse: [ super keyStroke: aKeyboardEvent ]! !
+	super keyStroke: aKeyboardEvent.
+ 	keystrokeAction ifNotNil: [ keystrokeAction value: aKeyboardEvent ].! !
+
+!VTextEntryMorph methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 18:14:48'!
+keystrokeAction: aBlock
+	keystrokeAction := aBlock! !
 
 !AnimatedMorph methodsFor: 'stepping' stamp: 'RMV 8/2/2024 10:13:08'!
 step
@@ -1060,203 +679,6 @@ mouseEnter: event
 !ArrowKeyBug methodsFor: 'as yet unclassified' stamp: 'RMV 8/4/2024 09:16:52'!
 mouseLeave: event
 	event hand releaseKeyboardFocus: self! !
-
-!BasicButtonMorph methodsFor: 'drawing' stamp: 'RMV 8/16/2024 16:32:44'!
-drawOn: aCanvas
-	| rect rectColor |
-		
-	rect := Rectangle origin: 0@0 extent: self morphExtent.
-	rectColor := hovered ifTrue: hoverColor ifFalse: fillColor.
-	aCanvas roundRect: rect color: rectColor radius: padding.
-	
-	aCanvas
-		drawString: label
-		from: 1
-		to: label size
-		atBaseline: padding @ (padding + font pointSize)
-		font: font
-		color: textColor! !
-
-!BasicButtonMorph methodsFor: 'initialization' stamp: 'RMV 8/16/2024 16:32:58'!
-initialize
-	super initialize.
-	
-	borderWidth := 0.
-	color := Color white.
-	fillColor := `Color black alpha: 0.1`.
-	font := FontFamily defaultFamilyAndPointSize.
-	hovered := false.
-	hoverColor := `Color black alpha: 0.2`.
-	padding := 10.
-	textColor := Color black.! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:00:16'!
-handlesMouseDown: aMouseEvent
-	^ true! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:00:16'!
-handlesMouseOver: aMouseEvent
-	^ true! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:11:04'!
-label: aString
-	label := aString! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:02:31'!
-mouseButton1Down: aMouseEvent localPosition: aPosition
-	onClick ifNotNil: [onClick value]! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:00:16'!
-mouseEnter: aMouseEvent
-	hovered := true.
-	self redrawNeeded ! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:00:16'!
-mouseLeave: aMouseEvent
-	hovered := false.
-	self redrawNeeded ! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:00:16'!
-onChange: aBlock
-	onChange := aBlock! !
-
-!BasicButtonMorph methodsFor: 'event handling' stamp: 'RMV 8/15/2024 19:02:50'!
-onClick: aBlock
-	onClick := aBlock! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 13:06:53'!
-fillColor
-	^ fillColor! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 13:06:38'!
-fillColor: aColor
-	fillColor := aColor! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 12:56:47'!
-font
-	^ font! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 12:56:37'!
-font: aFont
-	font := aFont! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/15/2024 19:00:16'!
-hoverColor
-	^ hoverColor! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/15/2024 19:00:16'!
-hoverColor: aColor
-	hoverColor := aColor! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 13:00:50'!
-morphExtent
-	| labelHeight labelWidth |
-	labelWidth := font widthOfString: label.
-	labelHeight := font pointSize. "TODO: correct?"
-	^ (padding * 2 + labelWidth) @ (padding * 2 + labelHeight)
-	
-! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/15/2024 19:00:16'!
-requiresVectorCanvas
-	^ true! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 16:32:28'!
-textColor
-	^ textColor! !
-
-!BasicButtonMorph methodsFor: 'accessing' stamp: 'RMV 8/16/2024 16:32:36'!
-textColor: aColor
-	textColor := aColor! !
-
-!BasicButtonMorph class methodsFor: 'as yet unclassified' stamp: 'RMV 8/15/2024 19:10:20'!
-label: aString onClick: aBlock
-	^ self new label: aString; onClick:​ aBlock! !
-
-!BasicCheckboxMorph methodsFor: 'drawing' stamp: 'RMV 8/15/2024 15:58:15'!
-drawOn: aCanvas
-	| savedColor x y |
-	
-	hovered ifTrue: [ savedColor := color. color := hoverColor ].
-	super drawOn: aCanvas.
-	hovered ifTrue: [ color := savedColor ].
-
-	x := self morphExtent x.
-	y := self morphExtent y.
-	
-	checked ifTrue: [
-		| p1 p2 p3 width |
-		p1 := (0.2 * x) @ (0.6 * y).
-		p2 := (0.4 * x) @ (0.8 * y).
-		p3 := (0.8 * x) @ (0.2 * y).
-		width := x / 8.
-		aCanvas line: p1 to: p2 width: width color: borderColor.
-		aCanvas line: p2 to: p3 width: width color: borderColor.
-	]
-! !
-
-!BasicCheckboxMorph methodsFor: 'initialization' stamp: 'RMV 8/15/2024 18:57:09'!
-initialize
-	super initialize.
-	
-	borderColor := Color black.
-	borderWidth := 1.
-	checked := false.
-	color := Color white.
-	hovered := false.
-	hoverColor := borderColor alpha: 0.1.
-	self morphExtent: 20 @ 20.
-	
-	self layoutSpec: (LayoutSpec fixedWidth: (self morphExtent x) fixedHeight: (self morphExtent y))! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/11/2024 19:19:49'!
-handlesMouseDown: aMouseEvent
-	^ true! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/13/2024 18:42:12'!
-handlesMouseOver: aMouseEvent
-	^ true! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/11/2024 19:27:43'!
-mouseButton1Down: aMouseEvent localPosition: aPosition
-	checked := checked not.
-	self redrawNeeded.
-	onChange ifNotNil: [onChange value: checked]! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/13/2024 18:53:05'!
-mouseEnter: aMouseEvent
-	hovered := true.
-	self redrawNeeded ! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/13/2024 18:49:43'!
-mouseLeave: aMouseEvent
-	hovered := false.
-	self redrawNeeded ! !
-
-!BasicCheckboxMorph methodsFor: 'event handling' stamp: 'RMV 8/11/2024 19:19:49'!
-onChange: aBlock
-	onChange := aBlock! !
-
-!BasicCheckboxMorph methodsFor: 'accessing' stamp: 'RMV 8/11/2024 19:21:31'!
-checked
-	^ checked! !
-
-!BasicCheckboxMorph methodsFor: 'accessing' stamp: 'RMV 8/15/2024 18:41:48'!
-checked: aBoolean
-	checked := aBoolean.
-	self redrawNeeded! !
-
-!BasicCheckboxMorph methodsFor: 'accessing' stamp: 'RMV 8/13/2024 18:54:59'!
-hoverColor
-	^ hoverColor! !
-
-!BasicCheckboxMorph methodsFor: 'accessing' stamp: 'RMV 8/13/2024 18:54:49'!
-hoverColor: aColor
-	hoverColor := aColor! !
-
-!BasicCheckboxMorph methodsFor: 'accessing' stamp: 'RMV 8/15/2024 08:43:55'!
-requiresVectorCanvas
-	^ true! !
 
 !CanvasDemo methodsFor: 'as yet unclassified' stamp: 'RMV 8/11/2024 18:28:33'!
 drawOn: aCanvas
@@ -1488,6 +910,25 @@ initialize
 	'inside initialize method' print.
 	foo := 1.
 	bar := 2! !
+
+!ExceptionDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/20/2024 13:12:07'!
+initialize
+	| block |
+	super initialize.
+	block := [
+		| button |
+		button := BasicButtonMorph
+			label: 'Press Me'
+			onClick: [
+				'got click' print.
+				Error signal: 'bad button'.
+			].
+		button openInHand.
+	] on: Exception do: [ :ex |
+    		ex messageText print.
+	].
+	block value.
+! !
 
 !Map methodsFor: 'accessing' stamp: 'RMV 6/10/2024 13:04:32'!
 doesNotUnderstand: aMessage
@@ -1780,188 +1221,96 @@ setHeight: aHeight width: aWidth
 height: aHeight width: aWidth
 	^self new setHeight: aHeight width: aWidth! !
 
-!Todo methodsFor: 'accessing' stamp: 'RMV 8/15/2024 18:40:33'!
-done
-	^ checkbox checked! !
-
-!Todo methodsFor: 'accessing' stamp: 'RMV 8/16/2024 19:30:23'!
-done: aBoolean
-	checkbox checked: aBoolean! !
-
-!Todo methodsFor: 'accessing' stamp: 'RMV 8/15/2024 18:37:36'!
-text
-	^ label contents! !
-
-!Todo methodsFor: 'accessing' stamp: 'RMV 8/17/2024 16:16:50'!
-text: aString
-	label contents: aString.
-	label redrawNeeded! !
-
-!Todo methodsFor: 'events-registering' stamp: 'RMV 8/13/2024 19:57:26'!
-onDelete: aBlock
-	onDelete := aBlock! !
-
-!Todo methodsFor: 'events-registering' stamp: 'RMV 8/13/2024 19:57:43'!
-onDoneToggle: aBlock
-	onDoneToggle := aBlock! !
-
-!Todo methodsFor: 'initialization' stamp: 'RMV 8/17/2024 15:09:35'!
-handleLabelClick: aMouseEvent
-	aMouseEvent logAs: 'Todo handleLabelClick: aMouseEvent'.! !
-
-!Todo methodsFor: 'initialization' stamp: 'RMV 8/17/2024 19:59:10'!
+!ShortCircuitDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/22/2024 20:43:50'!
 initialize
-	| button buttonFont |
-	
-	checkbox := BasicCheckboxMorph new.
-	checkbox onChange: [:checked |
-		label color: (checked ifTrue: [ Color gray ] ifFalse: [ Color black ]).
-		label font: (checked ifTrue: [ labelFont struckThrough ] ifFalse: [ labelFont ]).
-		onDoneToggle value: checked
-	].
-	
-	label := EditableLabelMorph new leftTopAlign.
-	label layoutSpec proportionalWidth: 1.
-	labelFont := label font.
-	
-	"The Kurinto Sans font is the only one I've found so far
-	that contains the wastebasket Unicode character.
-	This font must be installed!!"
-	buttonFont := FontFamily familyName: 'Kurinto Sans' pointSize: 18.
+	"(self isHot or: self isNight) ifTrue: ['was true' print] ifFalse: ['was false' print]	"
+	(self isHot or: [self isNight]) ifTrue: ['was true' print] ifFalse: ['was false' print]! !
 
-	button := BasicButtonMorph
-		label: '🗑' "wastebasket Unicode character"
-		onClick: [onDelete value].
-	button fillColor: Color transparent; textColor: Color red.
-	button font: buttonFont.
+!ShortCircuitDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/22/2024 20:38:09'!
+isHot
+	'isHot entered' print.
+	^ true! !
+
+!ShortCircuitDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/22/2024 20:38:35'!
+isNight
+	'isNight entered' print.
+	^ true! !
+
+!TextEntryDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 13:17:56'!
+initialize
+	| button height layoutMorph row |
+
+	text := 'World'.
+	
+	layoutMorph := LayoutMorph newColumn
+		color: Color white;
+		separation: 10.
 		
-	row := Layout2Morph newRow useEdgeSpace: false.
-	"row borderColor: Color red; borderWidth: 1."
-	row color: Color transparent.
-	row layoutSpec proportionalWidth: 1.
+	messageMorph := LabelMorph new contents: ''.
+	self updateMessage.
 	
-	row separation: 10@0.
-	row addMorph: checkbox.
-	row addMorph: label.
-	row addMorph: button.
-	
-	"Center the submorphs vertically."
-	row submorphsDo: [:morph | morph layoutSpec offAxisEdgeWeight: 0.5]! !
+	textEntryMorph := TextEntryMorph contents: text.
+	textEntryMorph layoutSpec fixedWidth: 200.
+	textEntryMorph crAction: [
+		self text: textEntryMorph contents.
+	].
 
-!Todo methodsFor: 'morphic' stamp: 'RMV 8/15/2024 18:29:07'!
-morph
-	^ row! !
+	textModelMorph := TextModelMorph
+		textProvider: self
+		textGetter: #text
+		textSetter: #text:.
+	textModelMorph acceptOnAny: true.
+	height := textModelMorph scrollDeltaHeight + 6. "padding of 3 on top and bottom"
+	textModelMorph layoutSpec fixedHeight: height; fixedWidth: 200.
 
-!Todo class methodsFor: 'instance creation' stamp: 'RMV 8/17/2024 16:16:50'!
-text: aString
-	^ self new text: aString; done: false! !
-
-!TodoApp methodsFor: 'initialization' stamp: 'RMV 8/18/2024 06:03:52'!
-initialize
-	| button layout lightBlue row titleLabel |
-
-	titleLabel := LabelMorph new
-		contents: 'To Do List';
-		color: Color blue.
-	
-	statusLabel := LabelMorph new
-		color: Color gray.
-	
-	todoEntry := CenteredTextEntryMorph contents: ''.
-	todoEntry layoutSpec fixedWidth: 240.
-	todoEntry crAction: [ self addTodoFromEntry ].
-	
-	button := BasicButtonMorph label: 'Add' onClick: [ self addTodoFromEntry ].
+	row := LayoutMorph newRow
+		color: Color lightYellow;
+		separation: 10.
+	row addMorph: (LabelMorph contents: 'TextEntryMorph').
+	row addMorph: textEntryMorph.
+	layoutMorph addMorph: row.
 	
 	row := LayoutMorph newRow
-		color: Color transparent.
-	row layoutSpec proportionalHeight: 0. "defaults to 1"
-	row addMorphs: {todoEntry. button} withSpace: 10.
-
-	todosPane := Layout2Morph newColumn useEdgeSpace: false.
-	todosPane layoutSpec proportionalWidth: 1.
-	todosPane color: Color transparent.
-
-	scrollPane := PluggableScroll2Pane new.
-	scrollPane layoutSpec 	proportionalWidth: 1.
-	scrollPane layoutSpec proportionalHeight: 1 minimum: 100.
-	scrollPane hHideScrollBar.
-	scrollPane color: Color transparent.
-	scrollPane scroller: todosPane.
-	scrollPane onExtentChanged: [ :newExtent |
-		todosPane morphExtent: (scrollPane hScrollBarWidth - 10) @ todosPane morphExtent y.
-	].
-
-	todos := OrderedCollection new.
+		color: Color lightPink;
+		separation: 10.
+	row addMorph: (LabelMorph contents: 'TextModelMorph').
+	row addMorph: textModelMorph.
+	layoutMorph addMorph: row.
 	
-	"Add initial todos for testing."
-	#('buy milk' 'cut grass' 'ride bike' 'run' 'study Smalltalk') do: [ :text |
-		self addTodo: text atStart: false
-	].
+	layoutMorph addMorph: messageMorph.
 
-	statusLabel contents: self status.
+	"When the button is pressed, the message specified in action:
+	is sent to the object specified in model:.
+	Sending #value to a Block executes it."
+	button := PluggableButtonMorph
+		model: [ self text: 'World' ]
+		action: #value
+		label: 'Reset'.
+	button adoptWidgetsColor: (Color gray: 0.75).
+	layoutMorph addMorph: button.
 	
-	lightBlue := Color r: 0.450 g: 0.600 b: 0.850.
-	window := SystemWindow new
-		borderColor: lightBlue;
-		labelString: 'Todo App'.
-
-	layout := window layoutMorph.
-	layout color: Color white; separation: 20.
-	layout addMorph: titleLabel.
-	layout addMorph: statusLabel.
-	layout addMorph: row.
-	layout addMorph: scrollPane.
-	
-	todosPane submorphsDo: [:morph | morph leftTopAlign].
-	layout submorphsDo: [:morph | morph leftTopAlign].
-		
-	"This causes the SystemWindow to be sized incorrectly ... too small."
-	"window openAtCursor."
-	window openInWorld.
-	
-	"Size the window to the minimum size that holds the contents.
-	 This must be done AFTER sending #openInWorld!!"
-	window morphExtent: window minimumExtent! !
-
-!TodoApp methodsFor: 'accessing' stamp: 'RMV 8/15/2024 18:46:56'!
-status
-	| remaining |
-	remaining := todos
-		inject: 0
-		into: [ :acc :todo |
-			todo done ifTrue: acc ifFalse: acc + 1
-		].
-	^ '{1} of {2} remaining' format: {remaining. todos size}.! !
-
-!TodoApp methodsFor: 'private' stamp: 'RMV 8/18/2024 06:10:57'!
-addTodo: aString atStart: aBoolean
-	| todo |
-	todo := Todo text: aString.
-	todo onDoneToggle: [ :done |
-		statusLabel contents: self status
-	].
-	todo onDelete: [
-		todos removeAllSuchThat: [:t | t text = todo text].
-		todosPane removeMorph: todo morph.
-		todosPane morphExtent: todosPane morphExtent x @ todosPane minimumExtent y.
-		statusLabel contents: self status.
-	].
-	todos add: todo.
-	aBoolean
-		ifTrue: [ todosPane addMorphBack: todo morph ]
-		ifFalse: [ todosPane addMorph: todo morph]
+	layoutMorph openInWorld.
 ! !
 
-!TodoApp methodsFor: 'private' stamp: 'RMV 8/11/2024 15:10:24'!
-addTodoFromEntry
-	| text |
-	text := todoEntry contents.
-	text isEmpty ifFalse: [
-		self addTodo: text atStart: true.
-		todoEntry contents: ''.
-		todoEntry keyboardFocusChange: true
-	]! !
+!TextEntryDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/24/2024 14:09:43'!
+text
+	^ text! !
+
+!TextEntryDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 10:15:04'!
+text: aString
+	text := aString.
+	textEntryMorph isNil ifFalse: [ textEntryMorph contents: aString ].
+	self updateMessage.
+	self changed: #text. "triggers textModelMorph to update"! !
+
+!TextEntryDemo methodsFor: 'as yet unclassified' stamp: 'rmv 8/25/2024 10:07:55'!
+updateMessage
+	messageMorph contents: (
+		text isEmpty
+			ifTrue: [ '' ]
+			ifFalse: [ 'Hello, {1}!!' format: {text} ]
+	)
+! !
 
 !TypeDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 6/6/2024 18:13:57'!
 double: obj
@@ -2162,7 +1511,7 @@ initialize
 		location: (MorphicTranslation withTranslation: 10@10);
 		openInWorld! !
 
-!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 7/10/2024 08:34:59'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'rmv 8/24/2024 14:16:00'!
 initialize
 	| size textMorph |
 
@@ -2174,7 +1523,7 @@ initialize
 	textMorph := TextModelMorph
 		textProvider: self
 		textGetter: #name
-		textSetter: #name: .
+		textSetter: #name:.
 	textMorph
 		acceptOnAny: true; "sends textSetter message on every change"
 		emptyTextDisplayMessage: 'Enter your name';
@@ -2187,8 +1536,7 @@ initialize
 	"Can you limit the width of this?"
 	self updateLabel.
 			
-	LayoutMorph new
-		beColumn;
+	LayoutMorph newColumn
 		addMorph: textMorph;
 		addMorph: greetLabel;
 		separation: 10;
@@ -2199,7 +1547,7 @@ initialize
 name
 	^name! !
 
-!VGreet methodsFor: 'as yet unclassified' stamp: 'RMV 6/14/2024 09:37:20'!
+!VGreet methodsFor: 'as yet unclassified' stamp: 'rmv 8/24/2024 14:47:01'!
 name: aString
 	name := aString.
 	self updateLabel! !
@@ -2335,10 +1683,6 @@ assessTemperature: aNumber
     aNumber < 40 ifTrue: [^ 'cold'].
     ^ 'warm'! !
 
-!Object methodsFor: '*Volkmann' stamp: 'RMV 6/14/2024 16:53:19'!
-logAs: aString
-	('{1} = {2}' format: {aString. self}) print! !
-
 !Collection methodsFor: '*Volkmann' stamp: 'RMV 7/6/2024 11:23:49'!
 asOxfordCommaStringAnd
 
@@ -2425,11 +1769,6 @@ browseRequest2: request
 		] fork. 							"fork it"
 	]! !
 
-!Morph methodsFor: '*Volkmann' stamp: 'RMV 8/4/2024 18:35:39'!
-leftTopAlign
-	self layoutSpec offAxisEdgeWeight: 0.
-! !
-
 !Morph methodsFor: '*Volkmann' stamp: 'RMV 8/6/2024 08:57:09'!
 openAtCursor
 	"Opens Morph, attempting to center it at hand location, but keeping it in the world bounds."
@@ -2439,17 +1778,6 @@ openAtCursor
 		ifNil: [ UISupervisor whenUIinSafeState: [ self openInWorld ]]
 		ifNotNil: [ :w |
 			w addMorph: self centeredNear: w activeHand morphPosition.
-		]! !
-
-!LayoutMorph methodsFor: '*Volkmann' stamp: 'RMV 8/5/2024 16:42:08'!
-addMorphs: anArray withSpace: aNumber
-	"Adds each morph in anArray with a spacer morph between them whose width is aNumber."
-	anArray
-		do: [ :morph | self addMorph: morph]
-		separatedBy: [
-			| spacer |
-			spacer := BoxedMorph new morphExtent: 10@10; borderWidth: 0; color: Color transparent.
-			self addMorph: spacer
 		]! !
 
 !PluggableButtonMorph class methodsFor: '*Volkmann' stamp: 'RMV 6/6/2024 18:28:36'!
