@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6635] on 25 August 2024 at 6:53:00 pm'!
+'From Cuis7.1 [latest update: #6684] on 22 September 2024 at 9:02:46 am'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 417!
+!provides: 'Volkmann' 1 420!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -75,7 +75,7 @@ AnimatedMorph class
 	instanceVariableNames: ''!
 
 !classDefinition: #ArrowKeyBug category: #Volkmann!
-BoxedMorph subclass: #ArrowKeyBug
+BorderedBoxMorph subclass: #ArrowKeyBug
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -174,6 +174,16 @@ Object subclass: #BufferQueue
 BufferQueue class
 	instanceVariableNames: ''!
 
+!classDefinition: #CardHand category: #Volkmann!
+Object subclass: #CardHand
+	instanceVariableNames: 'cards'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'CardHand class' category: #Volkmann!
+CardHand class
+	instanceVariableNames: ''!
+
 !classDefinition: #DebugMe category: #Volkmann!
 Object subclass: #DebugMe
 	instanceVariableNames: ''
@@ -202,6 +212,16 @@ Object subclass: #ExceptionDemo
 	category: 'Volkmann'!
 !classDefinition: 'ExceptionDemo class' category: #Volkmann!
 ExceptionDemo class
+	instanceVariableNames: ''!
+
+!classDefinition: #LayoutDemo category: #Volkmann!
+Object subclass: #LayoutDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'LayoutDemo class' category: #Volkmann!
+LayoutDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #Map category: #Volkmann!
@@ -780,7 +800,7 @@ drawOn: aCanvas
 drawOn: aCanvas
 	"aCanvas class name logAs: 'canvas'."
 	"VectorCanvas when superclass is PlacedMorph."
-	"HybridCanvas when superclass is BoxedMorph."
+	"HybridCanvas when superclass is BorderedBoxMorph."
 	
 	aCanvas
 		strokeWidth: 1
@@ -879,6 +899,14 @@ enqueue: anObject
 ofSize: aNumber
     ^self basicNew initialize: aNumber! !
 
+!CardHand methodsFor: 'as yet unclassified' stamp: 'rmv 9/14/2024 18:00:11'!
+setCards
+	cards := OrderedCollection new! !
+
+!CardHand class methodsFor: 'as yet unclassified' stamp: 'rmv 9/14/2024 17:59:44'!
+new
+	^super new setCards! !
+
 !DebugMe class methodsFor: 'as yet unclassified' stamp: 'RMV 7/3/2024 07:59:41'!
 average: numbers
     | sum |
@@ -929,6 +957,43 @@ initialize
 	].
 	block value.
 ! !
+
+!LayoutDemo methodsFor: 'as yet unclassified' stamp: 'rmv 9/1/2024 14:51:37'!
+initialize
+	| column container item row |
+	
+	column := LayoutMorph newColumn.
+	column layoutSpec fixedWidth: 300; fixedHeight: 200.
+	column borderColor: Color green; borderWidth: 5.
+	
+	row := LayoutMorph newRow.
+	row borderColor: Color yellow; borderWidth: 5.
+	row addMorph: (BorderedBoxMorph new color: Color pink).
+	row addMorph: (BorderedBoxMorph new color: Color lightBlue).
+	"By default, the submorphs will be pushed to the left and centered vertically."
+	"Center the submorphs horizontally."
+	row axisEdgeWeight: 0.5.
+	"Move all the submorphs to the top of the row."
+	row submorphsDo: [ :submorph | submorph layoutSpec offAxisEdgeWeight: 0 ].
+	column addMorph: row.	
+	
+	row := LayoutMorph newRow.
+	row borderColor: Color red; borderWidth: 5.
+	item := BorderedBoxMorph new color: Color lightGreen.
+	item layoutSpec proportionalWidth: 1. "grows width to maximum available"
+	row addMorph: item.
+	row addMorph: (BorderedBoxMorph new color: Color lightOrange).
+	column addMorph: row.
+	
+	"Each of the column submorphs will have the same height be default.
+	Since the column has a fixed height of 200, each row will have a height of 100."
+
+	"The column LayoutSpec won't be honored unless it is inside a LayoutMorph."
+	container := LayoutMorph newRow.	
+	container addMorph: column.
+	container openInHand.
+	
+	! !
 
 !Map methodsFor: 'accessing' stamp: 'RMV 6/10/2024 13:04:32'!
 doesNotUnderstand: aMessage
@@ -1260,7 +1325,7 @@ initialize
 		textGetter: #text
 		textSetter: #text:.
 	textModelMorph acceptOnAny: true.
-	height := textModelMorph scrollDeltaHeight + 6. "padding of 3 on top and bottom"
+	height := textModelMorph scrollDeltaHeight + 6. "adding of 3 on top and bottom"
 	textModelMorph layoutSpec fixedHeight: height; fixedWidth: 200.
 
 	row := LayoutMorph newRow
