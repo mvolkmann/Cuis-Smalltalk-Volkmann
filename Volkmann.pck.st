@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6684] on 22 September 2024 at 9:02:46 am'!
+'From Cuis7.1 [latest update: #6739] on 26 September 2024 at 4:59:40 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 420!
+!provides: 'Volkmann' 1 422!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -164,6 +164,16 @@ Animal subclass: #Dog
 Dog class
 	instanceVariableNames: ''!
 
+!classDefinition: #BasicWebServer category: #Volkmann!
+Object subclass: #BasicWebServer
+	instanceVariableNames: 'server'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'BasicWebServer class' category: #Volkmann!
+BasicWebServer class
+	instanceVariableNames: ''!
+
 !classDefinition: #BufferQueue category: #Volkmann!
 Object subclass: #BufferQueue
 	instanceVariableNames: 'buffer note size'
@@ -246,7 +256,7 @@ Math class
 
 !classDefinition: #MyWebServer category: #Volkmann!
 Object subclass: #MyWebServer
-	instanceVariableNames: 'dogDict server'
+	instanceVariableNames: 'dogDict routes server'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
@@ -262,6 +272,16 @@ Object subclass: #NameOfSubclass
 	category: 'Volkmann'!
 !classDefinition: 'NameOfSubclass class' category: #Volkmann!
 NameOfSubclass class
+	instanceVariableNames: ''!
+
+!classDefinition: #ODBCDemo category: #Volkmann!
+Object subclass: #ODBCDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'ODBCDemo class' category: #Volkmann!
+ODBCDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #PartialBlock category: #Volkmann!
@@ -422,6 +442,26 @@ Object subclass: #Weather
 	category: 'Volkmann'!
 !classDefinition: 'Weather class' category: #Volkmann!
 Weather class
+	instanceVariableNames: ''!
+
+!classDefinition: #WebContext category: #Volkmann!
+Object subclass: #WebContext
+	instanceVariableNames: 'request route'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'WebContext class' category: #Volkmann!
+WebContext class
+	instanceVariableNames: ''!
+
+!classDefinition: #WebRoute category: #Volkmann!
+Object subclass: #WebRoute
+	instanceVariableNames: 'method path pattern selector'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'WebRoute class' category: #Volkmann!
+WebRoute class
 	instanceVariableNames: ''!
 
 
@@ -864,6 +904,19 @@ speak 'Woof!!' print! !
 !Dog class methodsFor: 'as yet unclassified' stamp: 'RMV 7/4/2024 16:42:45'!
 legs ^4! !
 
+!BasicWebServer methodsFor: 'as yet unclassified' stamp: 'RMV 9/24/2024 12:50:35'!
+initialize	
+	server := WebServer new.
+	server addService: '/' action: [:req | req send200Response: 'Hello, World!!'].! !
+
+!BasicWebServer methodsFor: 'as yet unclassified' stamp: 'RMV 9/24/2024 12:41:46'!
+start
+	server listenOn: 3000! !
+
+!BasicWebServer methodsFor: 'as yet unclassified' stamp: 'RMV 9/25/2024 13:34:49'!
+stop
+	server destroy! !
+
 !BufferQueue methodsFor: 'accessing' stamp: 'RMV 5/31/2024 16:58:52'!
 count
 	^buffer size.! !
@@ -1031,7 +1084,7 @@ factorial: n
 		ifTrue: 1
 		ifFalse: [n * (Math factorial: n - 1)])! !
 
-!MyWebServer methodsFor: 'controlling' stamp: 'RMV 6/17/2024 14:48:28'!
+!MyWebServer methodsFor: 'controlling' stamp: 'RMV 9/25/2024 11:44:52'!
 start
 	| dog1 dog2 |
 	dog1 := VDog name: 'Comet' breed: 'Whippet'.
@@ -1042,42 +1095,167 @@ start
 	}.
 	server listenOn: 3000! !
 
-!MyWebServer methodsFor: 'controlling' stamp: 'RMV 6/16/2024 14:57:38'!
+!MyWebServer methodsFor: 'controlling' stamp: 'RMV 9/25/2024 11:44:42'!
 stop
+	server destroy! !
 
-	server stopListener! !
+!MyWebServer methodsFor: 'html' stamp: 'RMV 6/16/2024 14:59:00'!
+element: anAssoc
+	"This returns an HTML string.
+	The key in the Association must be a kind of String (such as a Symbol).
+	The value in the Association can be a primitive value or
+	an Array of Associations that represent nested elements."
+	
+	| content inner tag template |
+	
+	tag := anAssoc key.
+	content := anAssoc value.
+	"TODO: Add support for attributes."
+	template := '<{1}>{2}</{1}>'.
+	(content isKindOf: String)
+		ifTrue: [^​ template format: { tag. content } ]
+		ifFalse: [
+			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
+			inner := ''.
+			content do: [ :item | inner := inner, (self element: item) ].
+			^ template format: { tag. inner }
+		]
+! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 09:06:21'!
-createDog: aRequest
- 	| dog res |
+!MyWebServer methodsFor: 'initialization' stamp: 'RMV 9/26/2024 16:57:21'!
+initialize
+	"demonstrates using the WebServer class"
+	
+	server := WebServer new.
+	routes := OrderedCollection new.
+	
+	self method: #GET path: '/dog' selector: #getDogs:.
+	self method: #GET path: '/dog/:id' selector: #getDogAsJson:.
+	self method: #POST path: '/dog' selector: #createDog:.
+	self method: #PUT path: '/dog/:id' selector: #updateDog:.
+	self method: #DELETE path: '/dog/:id' selector: #deleteDog:.
+
+
+	"TODO: Change this to iterate over the routes and create individual service endpoints instead of handling all of them in a single endpoint. That way you can specify a single value for methods: for each endpoint."
+	server
+		addService: '/'
+		action: [:req |
+			| method route url |
+			method := req method.
+			url := req url.
+			url logAs: 'url'.
+			route := routes
+				detect: [:each | each method = method and: [each pattern match: url]]
+				ifNone: [nil].
+			route pattern logAs: 'matching route pattern'.
+			route selector logAs: 'matching route selector'.
+			route
+				ifNil: [
+					req send404Response
+				]
+				ifNotNil: [
+					| context |
+					context := WebContext newRequest: req route: route.
+					self perform: route selector with: context.
+				].
+		]
+		methods: #(#DELETE #GET #POST #PUT)
+
+	"TODO: Test this new code.
+	You need to change the WebServer dispatchRequest:url: method
+	to match against entryUrls that contains path parameter placeholders.
+	Is it true that the WebClient package does not support path parameters?"
+	"routes do: [:route |
+		server
+			addService: route path
+			action: [:req |
+				| context message |
+				context := WebContext newRequest: req route: route.
+				message := MessageSend
+					receiver: self
+					selector: route selector
+					argument: context.
+				message value.
+			]
+			methods: {route method}
+	]."
+	! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:26:35'!
+createDog: aWebContext
+ 	| dog req res |
+	
+	req := aWebContext request.
 	
 	"Get VDog object from request body. An id will be assigned."
-	dog := VDog fromJson: aRequest stream.
+	dog := VDog fromJson: req stream.
 	
 	"Save the new dog."
 	dogDict at: dog id put: dog.
 	
 	"Return the new dog as JSON."
-	res := WebResponse protocol: aRequest protocol code: 201. "Created"
+	res := WebResponse protocol: req protocol code: 201. "Created"
 	res headerAt: 'Content-Type' put: 'application/json; charset=utf-8'.
-	^ aRequest sendResponse: res content: (Json render: dog)
+	^ req sendResponse: res content: (Json render: dog)
 
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 08:53:19'!
-deleteDog: aRequest id: id
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:46:44'!
+deleteDog: aWebContext
+	| id req |
+	
+	req := aWebContext request.
+	id := aWebContext pathParameter: #id.
+	
 	"Delete the dog, verifying that a dog with the given id exists."
 	dogDict removeKey: id ifAbsent: [
-		^ aRequest send404Response.
+		^ req send404Response.
 	].
 
 	"Return an empty response."
-	^ aRequest send200Response: ''
+	^ req send200Response: ''
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 14:35:43'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/25/2024 14:12:12'!
+getDogAsJson: aRequest route: aWebRoute
+	| id json |
+	
+	id := aWebRoute request: aRequest pathParameter: #id.
+	id := [id asNumber] on: Error do: [ :e |
+		| res |
+		res := WebResponse protocol: aRequest protocol code: 400.
+		^ aRequest sendResponse: res content: e messageText
+	].
+	
+	json := Json render: (dogDict at: id).
+	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
+	
+! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:47:21'!
+getDogs: aWebContext	
+	| accept req |
+	req := aWebContext request.
+	accept := req headerAt: 'Accept'.
+	accept logAs: 'accept'.
+	accept = 'application/json'
+		ifTrue: [^self getDogsAsJson: req]
+		ifFalse: [^self getDogsAsHtml: req]! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/25/2024 13:50:00'!
+getDogs: aRequest	 route: aRoute
+	| accept |
+	accept := aRequest headerAt: 'Accept'.
+	accept logAs: 'accept'.
+	accept = 'application/json'
+		ifTrue: [^self getDogsAsJson: aRequest]
+		ifFalse: [^self getDogsAsHtml: aRequest]! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 20:24:11'!
 getDogsAsHtml: aRequest
 	| css html tableRows |
+	
+	'getDogsAsHtml entered' print.
 	css := '
 		body { font-family: sans-serif }
 		table { border-collapse: collapse }
@@ -1108,27 +1286,30 @@ getDogsAsHtml: aRequest
 	aRequest send200Response: html contentType: 'text/html'
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:08:33'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 20:24:27'!
 getDogsAsJson: aRequest
 	| json |
+	
+	'getDogsAsJson entered' print.
 	
 	"Create a JSON array from the dog Dictionary."
 	json := Json render: dogDict asArray.
 	
-	"Return the JSON."
 	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
 	
 ! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/18/2024 09:22:21'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 15:45:56'!
 handleDog: aRequest	
 	"handle an HTTP request based on its method"
 	
 	| id method |
 	
+	"'handleDog entered' print."
+	
 	method := aRequest method.
 	
-	(#('DELETE' 'PUT') includes: method) ifTrue: [
+	(#('DELETE' 'GET' 'PUT') includes: method) ifTrue: [
 		"Get the path parameter value."
 		"TODO: Is this really the best way to do it?"
 		| parts |
@@ -1144,25 +1325,48 @@ handleDog: aRequest
 		['GET'] -> [ | accept |
 			accept := aRequest headerAt: 'Accept'.
 			(accept includesSubString: 'application/json') ifTrue: [
- 				^self getDogsAsJson: aRequest].
+				id
+					ifNil: [^self getDogsAsJson: aRequest]
+					ifNotNil: [^self getDogAsJson: aRequest id: id]
+			].
  			(accept includesSubString: 'text/html') ifTrue: [
- 				^self getDogsAsHtml: aRequest]].
+ 				^self getDogsAsHtml: aRequest
+			]
+		].
 		['POST'] -> [self createDog: aRequest].
  		['DELETE'] -> [self deleteDog: aRequest id: id value].
 		['PUT'] -> [self updateDog: aRequest id: id value]
  	}! !
 
-!MyWebServer methodsFor: 'handling' stamp: 'RMV 6/17/2024 16:09:01'!
-updateDog: aRequest id: id
-	| dog |
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 6/16/2024 15:08:09'!
+helloWorld: req
 	
-	"Verify that a dog with the given id exists."
-	dogDict at: id ifAbsent: [
-		^ aRequest send404Response
+	req send200Response: 'Hello, World!!'! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 16:05:57'!
+method: methodString path: pathString selector: selectorSymbol
+	| route |
+	route := WebRoute newMethod: methodString path: pathString selector: selectorSymbol.
+	routes add: route! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:46:01'!
+updateDog: aWebContext
+	| dog id req |
+	
+	req := aWebContext request.
+	id := aWebContext pathParameter: #id.
+	id logAs: 'updateDog: id'.
+	id := [id asNumber] on: Error do: [ :e |
+		| res |
+		res := WebResponse protocol: req protocol code: 400.
+		^ req sendResponse: res content: e messageText
 	].
 
+	"Verify that a dog with the given id exists."
+	dogDict at: id ifAbsent: [^ req send404Response].
+
 	"Get VDog object from request body."
-	dog := VDog fromJson: aRequest stream.
+	dog := VDog fromJson: req stream.
 	dog logAs: 'dog'.
 	
 	"Update its id to match id parameter."
@@ -1172,61 +1376,49 @@ updateDog: aRequest id: id
 	dogDict at: dog id put: dog.
 	
 	"Return the updated dog as JSON."
-	^ aRequest send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
+	^ req send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
 ! !
 
-!MyWebServer methodsFor: 'html' stamp: 'RMV 6/16/2024 14:59:00'!
-element: anAssoc
-	"This returns an HTML string.
-	The key in the Association must be a kind of String (such as a Symbol).
-	The value in the Association can be a primitive value or
-	an Array of Associations that represent nested elements."
-	
-	| content inner tag template |
-	
-	tag := anAssoc key.
-	content := anAssoc value.
-	"TODO: Add support for attributes."
-	template := '<{1}>{2}</{1}>'.
-	(content isKindOf: String)
-		ifTrue: [^​ template format: { tag. content } ]
-		ifFalse: [
-			"Maybe this should raise an exception if (content isKindOf: SequenceableCollection) is false."
-			inner := ''.
-			content do: [ :item | inner := inner, (self element: item) ].
-			^ template format: { tag. inner }
-		]
+!MyWebServer methodsFor: 'routing' stamp: 'RMV 9/23/2024 20:14:55'!
+routeForMethod: methodSymbol path: pathString
+	^routes
+		detect: [:each | methodSymbol = each method and: [each pattern match: pathString]]
+		ifNone: [^nil].
 ! !
 
-!MyWebServer methodsFor: 'initialization' stamp: 'RMV 6/17/2024 15:50:16'!
-initialize
-	"demonstrates using the WebServer class"
+!ODBCDemo class methodsFor: 'as yet unclassified' stamp: 'RMV 9/23/2024 13:43:23'!
+demo
+	| columns conn dsn password query resultSet rowCount stmt time timePerRow user |
 	
-	server := WebServer new.
+	dsn := 'pets.db'.
+	password := ''.
+	query := 'select * from dogs'.
+	user := ''.
 	
-	"This looks for files in the Cuis-Smalltalk-Dev-UserFiles directory."
-	server addService: '/public' action:[:req| WebServer browseRequest2: req].
-	
-	"server addService: '/' action: [ :req | req send200Response: 'Home Page']."
-	"server addService: '/hello' action: [ :req | req send200Response: 'Hello World!!']."
-	
-	server addService: '/hello' action: (MessageSend receiver: self selector: #helloWorld:).
+	ODBCConnection log: 'Connecting to: ' , dsn.
+	conn := ODBCConnection dsn: dsn user: user password: password.
 
-	server
-		addService: '/dog'
-		action: (MessageSend receiver: self selector: #handleDog:)
-		methods: #('DELETE' 'GET' 'POST' 'PUT').
+	"ODBCConnection log: 'Creating statement for query: ' , query.
+	stmt := conn query: query.
 
-	"server addService: '/dog' action: [ :req | self createDog: req ] methods: #('POST')."
-	
-	"addService: '/dog' action: [ :req | self updateDog: req ] methods: #('PUT');"
-	
-	"addService: '/dog' action: [ :req | self deleteDog: req ] methods: #('DELETE')"! !
+	ODBCConnection log: 'Executing statement'.
+	resultSet := stmt execute.
+	columns := resultSet columns.
 
-!MyWebServer methodsFor: 'as yet unclassified' stamp: 'RMV 6/16/2024 15:08:09'!
-helloWorld: req
+	ODBCConnection log: 'Statement executed '.
+	columns
+		do: [:column | self log: '    ' , column asString].
+
+	ODBCConnection log: 'Iterating over ResultSet'.
+	rowCount := 0.
+	time := Time
+				millisecondsToRun: [resultSet
+						do: [:row | rowCount := rowCount + 1]].
+	timePerRow := (time / rowCount ) asFloat roundTo: 0.01.
+
+	ODBCConnection log: 'Iterating ResultSet has ' , rowCount asString , ' rows and was iterated in ' , time asString , 'ms  (' , timePerRow asString , 'ms/row)'."
 	
-	req send200Response: 'Hello, World!!'! !
+	conn close! !
 
 !PartialBlock methodsFor: 'private' stamp: 'RMV 8/2/2024 18:22:32'!
 setBlock: aBlock
@@ -1747,6 +1939,73 @@ assessTemperature: aNumber
     aNumber > 80 ifTrue: [^ 'hot'].
     aNumber < 40 ifTrue: [^ 'cold'].
     ^ 'warm'! !
+
+!WebContext methodsFor: 'private' stamp: 'RMV 9/26/2024 09:22:59'!
+request: aWebRequest route: aWebRoute
+	request := aWebRequest.
+	route := aWebRoute.! !
+
+!WebContext methodsFor: 'accessing' stamp: 'RMV 9/26/2024 09:44:35'!
+pathParameter: aParameter
+	| index tokens |
+	tokens := route path findTokens: #/.
+	index := tokens indexOf: ':', aParameter.
+	tokens := request rawUrl findTokens: #/.
+	^tokens at: index.! !
+
+!WebContext methodsFor: 'accessing' stamp: 'RMV 9/26/2024 09:23:35'!
+request
+	^request! !
+
+!WebContext methodsFor: 'accessing' stamp: 'RMV 9/26/2024 09:23:28'!
+route
+	^route! !
+
+!WebContext class methodsFor: 'as yet unclassified' stamp: 'RMV 9/26/2024 16:56:50'!
+newRequest: aWebRequest route: aWebRoute
+	^WebContext new request: aWebRequest route: aWebRoute! !
+
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 9/23/2024 16:01:19'!
+method
+	^method! !
+
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 9/23/2024 16:01:28'!
+path
+	^path! !
+
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 9/23/2024 16:37:20'!
+pattern
+	^pattern! !
+
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 9/23/2024 16:01:34'!
+selector
+	^selector! !
+
+!WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:01:50'!
+method: aString
+	method := aString! !
+
+!WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:01:57'!
+path: aString
+	path := aString! !
+
+!WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:37:51'!
+pattern: aString
+	pattern := aString! !
+
+!WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:02:15'!
+selector: aSymbol
+	selector := aSymbol! !
+
+!WebRoute class methodsFor: 'as yet unclassified' stamp: 'RMV 9/23/2024 19:51:10'!
+newMethod: methodSymbol path: pathString selector: selectorSymbol
+	| route |
+	route := WebRoute new.
+	route method: methodSymbol.
+	route path: pathString.
+	route selector: selectorSymbol.
+	route pattern: (pathString copyWithRegex: '\:\w+' matchesReplacedWith: '*').
+	^route! !
 
 !Collection methodsFor: '*Volkmann' stamp: 'RMV 7/6/2024 11:23:49'!
 asOxfordCommaStringAnd
