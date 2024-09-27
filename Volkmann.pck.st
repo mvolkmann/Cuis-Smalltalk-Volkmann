@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6739] on 26 September 2024 at 4:59:40 pm'!
+'From Cuis7.1 [latest update: #6739] on 26 September 2024 at 8:18:34 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 422!
+!provides: 'Volkmann' 1 423!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -1200,12 +1200,13 @@ createDog: aWebContext
 
 ! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:46:44'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:18:01'!
 deleteDog: aWebContext
 	| id req |
 	
 	req := aWebContext request.
 	id := aWebContext pathParameter: #id.
+	id := [id asNumber] on: Error do: [ :e | ^ req send400Response: e messageText].
 	
 	"Delete the dog, verifying that a dog with the given id exists."
 	dogDict removeKey: id ifAbsent: [
@@ -1214,6 +1215,19 @@ deleteDog: aWebContext
 
 	"Return an empty response."
 	^ req send200Response: ''
+! !
+
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:17:29'!
+getDogAsJson: aWebContext
+	| id json req |
+	
+	req := aWebContext request.
+	id := aWebContext pathParameter: #id.
+	id := [id asNumber] on: Error do: [ :e | ^ req send400Response: e messageText].
+	
+	json := Json render: (dogDict at: id).
+	req send200Response: json contentType: 'application/json; charset=utf-8'
+	
 ! !
 
 !MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/25/2024 14:12:12'!
@@ -1251,11 +1265,10 @@ getDogs: aRequest	 route: aRoute
 		ifTrue: [^self getDogsAsJson: aRequest]
 		ifFalse: [^self getDogsAsHtml: aRequest]! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 20:24:11'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:08:43'!
 getDogsAsHtml: aRequest
 	| css html tableRows |
 	
-	'getDogsAsHtml entered' print.
 	css := '
 		body { font-family: sans-serif }
 		table { border-collapse: collapse }
@@ -1286,12 +1299,10 @@ getDogsAsHtml: aRequest
 	aRequest send200Response: html contentType: 'text/html'
 ! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 20:24:27'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:08:38'!
 getDogsAsJson: aRequest
 	| json |
-	
-	'getDogsAsJson entered' print.
-	
+		
 	"Create a JSON array from the dog Dictionary."
 	json := Json render: dogDict asArray.
 	
@@ -1299,14 +1310,12 @@ getDogsAsJson: aRequest
 	
 ! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/23/2024 15:45:56'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:08:49'!
 handleDog: aRequest	
 	"handle an HTTP request based on its method"
 	
 	| id method |
-	
-	"'handleDog entered' print."
-	
+		
 	method := aRequest method.
 	
 	(#('DELETE' 'GET' 'PUT') includes: method) ifTrue: [
@@ -1349,18 +1358,13 @@ method: methodString path: pathString selector: selectorSymbol
 	route := WebRoute newMethod: methodString path: pathString selector: selectorSymbol.
 	routes add: route! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:46:01'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:17:45'!
 updateDog: aWebContext
 	| dog id req |
 	
 	req := aWebContext request.
 	id := aWebContext pathParameter: #id.
-	id logAs: 'updateDog: id'.
-	id := [id asNumber] on: Error do: [ :e |
-		| res |
-		res := WebResponse protocol: req protocol code: 400.
-		^ req sendResponse: res content: e messageText
-	].
+	id := [id asNumber] on: Error do: [ :e | ^ req send400Response: e messageText].
 
 	"Verify that a dog with the given id exists."
 	dogDict at: id ifAbsent: [^ req send404Response].
@@ -2125,5 +2129,24 @@ clearInternal
 		unfinishedEntry reset.
 		lastDisplayPosition := 0 ].
 	self display! !
+
+!WebRequest methodsFor: '*Volkmann' stamp: 'RMV 9/26/2024 20:14:47'!
+send400Response: body
+	"Send a 400 Bad Request response"
+
+	^self 
+		send400Response: body asUtf8Bytes
+		do: [ :resp | resp headerAt: 'Content-Type' put: 'text/html; charset=utf-8' ]! !
+
+!WebRequest methodsFor: '*Volkmann' stamp: 'RMV 9/26/2024 20:15:52'!
+send400Response: body do: aBlock
+	"Send a 400 Bad Request response"
+
+	| resp |
+	resp := self newResponse protocol: 'HTTP/1.1' code: 400.
+	resp headerAt: 'Content-Type' put: 'text/html; charset=utf-8'.
+	aBlock value: resp.
+	^self sendResponse: resp content: body.
+! !
 Animal initialize!
 VDog initialize!
