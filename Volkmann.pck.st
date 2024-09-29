@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6739] on 26 September 2024 at 8:18:34 pm'!
+'From Cuis7.1 [latest update: #6739] on 29 September 2024 at 10:17:02 am'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 423!
+!provides: 'Volkmann' 1 424!
 SystemOrganization addCategory: #Volkmann!
 
 
@@ -222,6 +222,16 @@ Object subclass: #ExceptionDemo
 	category: 'Volkmann'!
 !classDefinition: 'ExceptionDemo class' category: #Volkmann!
 ExceptionDemo class
+	instanceVariableNames: ''!
+
+!classDefinition: #FFIDemo category: #Volkmann!
+Object subclass: #FFIDemo
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Volkmann'!
+!classDefinition: 'FFIDemo class' category: #Volkmann!
+FFIDemo class
 	instanceVariableNames: ''!
 
 !classDefinition: #LayoutDemo category: #Volkmann!
@@ -1122,7 +1132,7 @@ element: anAssoc
 		]
 ! !
 
-!MyWebServer methodsFor: 'initialization' stamp: 'RMV 9/26/2024 16:57:21'!
+!MyWebServer methodsFor: 'initialization' stamp: 'RMV 9/29/2024 10:14:13'!
 initialize
 	"demonstrates using the WebServer class"
 	
@@ -1143,12 +1153,9 @@ initialize
 			| method route url |
 			method := req method.
 			url := req url.
-			url logAs: 'url'.
 			route := routes
 				detect: [:each | each method = method and: [each pattern match: url]]
 				ifNone: [nil].
-			route pattern logAs: 'matching route pattern'.
-			route selector logAs: 'matching route selector'.
 			route
 				ifNil: [
 					req send404Response
@@ -1246,12 +1253,15 @@ getDogAsJson: aRequest route: aWebRoute
 	
 ! !
 
-!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:47:21'!
+!MyWebServer methodsFor: 'message handling' stamp: 'RMV 9/29/2024 10:11:46'!
 getDogs: aWebContext	
 	| accept req |
+	
+	"queryParams := aWebContext queryParameters.
+	queryParams logAs: 'queryParams'."
+	
 	req := aWebContext request.
 	accept := req headerAt: 'Accept'.
-	accept logAs: 'accept'.
 	accept = 'application/json'
 		ifTrue: [^self getDogsAsJson: req]
 		ifFalse: [^self getDogsAsHtml: req]! !
@@ -1949,13 +1959,32 @@ request: aWebRequest route: aWebRoute
 	request := aWebRequest.
 	route := aWebRoute.! !
 
-!WebContext methodsFor: 'accessing' stamp: 'RMV 9/26/2024 09:44:35'!
+!WebContext methodsFor: 'accessing' stamp: 'RMV 9/29/2024 10:15:57'!
 pathParameter: aParameter
 	| index tokens |
-	tokens := route path findTokens: #/.
+	tokens := route path findTokens: $/.
 	index := tokens indexOf: ':', aParameter.
-	tokens := request rawUrl findTokens: #/.
+	tokens := request rawUrl findTokens: $/.
 	^tokens at: index.! !
+
+!WebContext methodsFor: 'accessing' stamp: 'RMV 9/29/2024 10:08:37'!
+queryParameters
+	"Answer a Dictionary containing all the query parameters."
+	| dict index url |
+	dict := Dictionary new.
+	url := request rawUrl.
+	index := url findString: '?'.
+	index > 0 ifTrue: [
+		| parts sub |
+		sub := url copyFrom: index + 1 to: url size.
+		parts := sub findTokens: '&'.
+		parts do: [:part |
+			| kv |
+			kv := part prefixAndSuffix: $=.
+			kv ifNotNil: [dict at: kv first put: kv last].
+		]
+	].
+	^dict.! !
 
 !WebContext methodsFor: 'accessing' stamp: 'RMV 9/26/2024 09:23:35'!
 request
