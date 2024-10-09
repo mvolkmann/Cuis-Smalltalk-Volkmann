@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:32:06 pm'!
+'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:46:08 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 474!
+!provides: 'Volkmann' 1 475!
 !requires: 'UI-MetaProperties' 1 139 nil!
 !requires: 'FFI' 1 51 nil!
 !requires: 'WebClient' 1 37 nil!
@@ -976,6 +976,28 @@ setUp
 	WebClientPlus method: #POST url: url content: dog asJsonString.
 	dog := VDog name: 'Oscar' breed: 'German Shorthaired Pointer'.
 	WebClientPlus method: #POST url: url content: dog asJsonString.! !
+
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:45:52'!
+testDelete
+	| baseUrl dog dogs jsonArray res url |
+
+	"Get any one of the current dogs."
+	baseUrl := 'http://localhost:3000/dog'.
+	res := WebClientPlus method: #GET url: baseUrl.
+	self assert: [res code = 200] description: 'OK status'.
+	jsonArray := Json readFrom: res stream.
+	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
+	dog := dogs first.
+
+	"Delete the dog."
+	url := '{1}/{2}' format: {baseUrl. dog id}.
+	res := WebClientPlus method: #DELETE url: url.
+	self assert: [res code = 200] description: 'OK status'.
+	
+	"Atttempt to get the deleted dog."
+	res := WebClientPlus method: #GET url: url.
+	self assert: [res code = 404] description: 'Not Found status'.
+! !
 
 !DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:17:49'!
 testGet
@@ -2401,33 +2423,20 @@ deleteDog: aWebContext
 	^ req send200Response: ''
 ! !
 
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:17:29'!
+!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/9/2024 13:44:33'!
 getDogAsJson: aWebContext
-	| id json req |
+	| dog id req |
 	
 	req := aWebContext request.
 	id := aWebContext pathParameter: #id.
 	id := [id asNumber] on: Error do: [ :e | ^ req send400Response: e messageText].
 	
-	json := Json render: (dogDict at: id).
-	req send200Response: json contentType: 'application/json; charset=utf-8'
-	
-! !
-
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/25/2024 14:12:12'!
-getDogAsJson: aRequest route: aWebRoute
-	| id json |
-	
-	id := aWebRoute request: aRequest pathParameter: #id.
-	id := [id asNumber] on: Error do: [ :e |
-		| res |
-		res := WebResponse protocol: aRequest protocol code: 400.
-		^ aRequest sendResponse: res content: e messageText
-	].
-	
-	json := Json render: (dogDict at: id).
-	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
-	
+	dog := dogDict at: id ifAbsent: nil.
+	dog
+		ifNil: [ req send404Response ]
+		ifNotNil: [
+			req send200Response: (Json render: dog) contentType: 'application/json; charset=utf-8'
+		].	
 ! !
 
 !DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/9/2024 13:16:44'!
