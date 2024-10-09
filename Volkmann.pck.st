@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6757] on 8 October 2024 at 7:07:24 pm'!
+'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:22:20 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 469!
+!provides: 'Volkmann' 1 473!
 !requires: 'UI-MetaProperties' 1 139 nil!
 !requires: 'FFI' 1 51 nil!
 !requires: 'WebClient' 1 37 nil!
@@ -977,13 +977,12 @@ setUp
 	dog := VDog name: 'Oscar' breed: 'German Shorthaired Pointer'.
 	WebClientPlus method: #POST url: url content: dog asJsonString.! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/8/2024 19:06:54'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:17:49'!
 testGet
-	| dogs expected headers jsonArray res url |
+	| dogs expected jsonArray res url |
 
 	url := 'http://localhost:3000/dog'.
-	headers := { 'Accept' -> 'application/json' } asDictionary	.
-	res := WebClientPlus method: #GET url: url headers: headers.
+	res := WebClientPlus method: #GET url: url.
 	
 	self assert: [res code = 200] description: 'OK status'.
 	
@@ -997,19 +996,61 @@ testGet
 	self assert: [dogs = expected] description: 'correct response body'.
 	! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/8/2024 19:06:58'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:22:05'!
 testPost
-	| breed dog json name res url |
-		
+	| baseUrl breed id json name res url |
+
+	"Create a new dog."		
+	baseUrl := 'http://localhost:3000/dog'.
 	name := 'Snoopy'.
 	breed := 'Beagle'.
-	dog := VDog name: name breed: breed.
-	url := 'http://localhost:3000/dog'.
-	res := WebClientPlus method: #POST url: url content: dog asJsonString.
+	json := {#name->name. #breed->breed} asDictionary asJsonString.
+	res := WebClientPlus method: #POST url: baseUrl content: json.
 	self assert: [res code = 201] description: 'Created status'.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
-	self assert: (json at: #breed) equals: breed.! !
+	self assert: (json at: #breed) equals: breed.
+	id := json at: #id.
+	
+	"Get the dog just created."
+	url := '{1}/{2}' format: {baseUrl. id}.
+	res := WebClientPlus method: #GET url: url.
+	self assert: [res code = 200] description: 'OK status'.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: name.
+	self assert: (json at: #breed) equals: breed.
+! !
+
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:17:29'!
+testPut
+	| baseUrl breed dog dogs json jsonArray name res url |
+
+	"Get any one of the current dogs."
+	baseUrl := 'http://localhost:3000/dog'.
+	res := WebClientPlus method: #GET url: baseUrl.
+	self assert: [res code = 200] description: 'OK status'.
+	jsonArray := Json readFrom: res stream.
+	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
+	dog := dogs first.
+
+	"Modify the name and breed of that dog."
+	url := '{1}/{2}' format: {baseUrl. dog id}.
+	name := 'Fireball'.
+	breed := 'Greyhound'.
+	json := {#name->name. #breed->breed} asDictionary asJsonString.
+	res := WebClientPlus method: #PUT url: url content: json.
+	self assert: [res code = 200] description: 'OK status'.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: name.
+	self assert: (json at: #breed) equals: breed.
+	
+	"Get the modified dog."
+	res := WebClientPlus method: #GET url: url.
+	self assert: [res code = 200] description: 'OK status'.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: name.
+	self assert: (json at: #breed) equals: breed.
+! !
 
 !VShapeTests methodsFor: 'testing' stamp: 'RMV 6/3/2024 19:10:27'!
 testCircleArea
@@ -2300,8 +2341,9 @@ createDog: aWebContext
 
 ! !
 
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/8/2024 19:05:59'!
+!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/8/2024 20:34:27'!
 deleteAllDogs: aWebContext
+	"This should only be used by the setUp method in DogWebServerTests."
 	| req |
 	
 	req := aWebContext request.
@@ -2358,7 +2400,7 @@ getDogAsJson: aRequest route: aWebRoute
 	
 ! !
 
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/7/2024 09:56:55'!
+!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/9/2024 13:16:44'!
 getDogs: aWebContext	
 	| accept queryParams req |
 	
@@ -2367,9 +2409,9 @@ getDogs: aWebContext
 	
 	req := aWebContext request.
 	accept := req headerAt: 'Accept'.
-	accept = 'application/json'
-		ifTrue: [^self getDogsAsJson: req]
-		ifFalse: [^self getDogsAsHtml: req]! !
+	accept includesSubString: 'text/html' ::
+		ifTrue: [^self getDogsAsHtml: req]
+		ifFalse: [^self getDogsAsJson: req]! !
 
 !DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:08:43'!
 getDogsAsHtml: aRequest
