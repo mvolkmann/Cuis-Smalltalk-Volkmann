@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:22:20 pm'!
+'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:32:06 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 473!
+!provides: 'Volkmann' 1 474!
 !requires: 'UI-MetaProperties' 1 139 nil!
 !requires: 'FFI' 1 51 nil!
 !requires: 'WebClient' 1 37 nil!
@@ -995,6 +995,36 @@ testGet
 	}.
 	self assert: [dogs = expected] description: 'correct response body'.
 	! !
+
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:31:54'!
+testPatch
+	| baseUrl dog dogs json jsonArray name res url |
+
+	"Get any one of the current dogs."
+	baseUrl := 'http://localhost:3000/dog'.
+	res := WebClientPlus method: #GET url: baseUrl.
+	self assert: [res code = 200] description: 'OK status'.
+	jsonArray := Json readFrom: res stream.
+	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
+	dog := dogs first.
+
+	"Modify the name of that dog."
+	url := '{1}/{2}' format: {baseUrl. dog id}.
+	name := 'Spot'.
+	json := {#name->name} asDictionary asJsonString.
+	res := WebClientPlus method: #PATCH url: url content: json.
+	self assert: [res code = 200] description: 'OK status'.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: name.
+	self assert: (json at: #breed) equals: dog breed.
+	
+	"Get the modified dog."
+	res := WebClientPlus method: #GET url: url.
+	self assert: [res code = 200] description: 'OK status'.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: name.
+	self assert: (json at: #breed) equals: dog breed.
+! !
 
 !DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:22:05'!
 testPost
