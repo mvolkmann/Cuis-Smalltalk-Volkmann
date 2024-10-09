@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 3:59:16 pm'!
+'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 4:07:47 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 482!
+!provides: 'Volkmann' 1 483!
 !requires: 'UI-MetaProperties' 1 139 nil!
 !requires: 'FFI' 1 51 nil!
 !requires: 'WebClient' 1 37 nil!
@@ -2401,7 +2401,7 @@ routeForMethod: methodSymbol path: pathString
 			ifNone: [ nil ].
 	]! !
 
-!DogWebServer methodsFor: 'initialization' stamp: 'RMV 10/9/2024 15:56:47'!
+!DogWebServer methodsFor: 'initialization' stamp: 'RMV 10/9/2024 16:07:43'!
 initialize
 	| dog1 dog2 |
 		
@@ -2417,7 +2417,6 @@ initialize
 	
 	"Register routes."
 	self method: #GET path: '/hello' handler: [ :context |
-		'handling GET /hello' print.
 		context request send200Response: 'Hello, World!!'
 	].
 	"Don't forget the colon the end of the selectors!!"
