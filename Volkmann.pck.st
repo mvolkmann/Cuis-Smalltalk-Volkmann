@@ -1,6 +1,6 @@
-'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 1:46:08 pm'!
+'From Cuis7.1 [latest update: #6757] on 9 October 2024 at 3:59:16 pm'!
 'Description I created this package to hold all my experimental code.'!
-!provides: 'Volkmann' 1 475!
+!provides: 'Volkmann' 1 482!
 !requires: 'UI-MetaProperties' 1 139 nil!
 !requires: 'FFI' 1 51 nil!
 !requires: 'WebClient' 1 37 nil!
@@ -489,7 +489,7 @@ WebHtmlStr class
 
 !classDefinition: #WebRoute category: #Volkmann!
 Object subclass: #WebRoute
-	instanceVariableNames: 'method path pattern selector'
+	instanceVariableNames: 'handler method path pattern'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Volkmann'!
@@ -977,7 +977,7 @@ setUp
 	dog := VDog name: 'Oscar' breed: 'German Shorthaired Pointer'.
 	WebClientPlus method: #POST url: url content: dog asJsonString.! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:45:52'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:19:25'!
 testDelete
 	| baseUrl dog dogs jsonArray res url |
 
@@ -992,21 +992,24 @@ testDelete
 	"Delete the dog."
 	url := '{1}/{2}' format: {baseUrl. dog id}.
 	res := WebClientPlus method: #DELETE url: url.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	
-	"Atttempt to get the deleted dog."
+	"Attempt to get the deleted dog."
 	res := WebClientPlus method: #GET url: url.
-	self assert: [res code = 404] description: 'Not Found status'.
-! !
+	self assert: res code equals: 404.
+	
+	"Try to delete the dog again."
+	res := WebClientPlus method: #DELETE url: url.
+	self assert: res code equals: 404.
+	! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:17:49'!
-testGet
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:17:44'!
+testGetAll
 	| dogs expected jsonArray res url |
 
 	url := 'http://localhost:3000/dog'.
-	res := WebClientPlus method: #GET url: url.
-	
-	self assert: [res code = 200] description: 'OK status'.
+	res := WebClientPlus method: #GET url: url.	
+	self assert: res code equals: 200.
 	
 	jsonArray := Json readFrom: res stream.
 	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
@@ -1018,14 +1021,44 @@ testGet
 	self assert: [dogs = expected] description: 'correct response body'.
 	! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:31:54'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:17:55'!
+testGetById
+	| baseUrl dog dogs json jsonArray res url |
+
+	"Get any one of the current dogs."
+	baseUrl := 'http://localhost:3000/dog'.
+	res := WebClientPlus method: #GET url: baseUrl.
+	self assert: res code equals: 200.
+	jsonArray := Json readFrom: res stream.
+	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
+	dog := dogs first.
+
+	"Attempt to get that dog by its id."
+	url := '{1}/{2}' format: {baseUrl. dog id}.
+	res := WebClientPlus method: #GET url: url.
+	self assert: res code equals: 200.
+	json := Json readFrom: res stream.
+	self assert: (json at: #name) equals: dog name.
+	self assert: (json at: #breed) equals: dog breed.
+! !
+
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:57:56'!
+testHello
+	| res |
+
+	res := WebClientPlus method: #GET url: 'http://localhost:3000/hello'.
+	self assert: res code equals: 200.
+	self assert: res content equals: 'Hello, World!!'.
+! !
+
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:18:10'!
 testPatch
 	| baseUrl dog dogs json jsonArray name res url |
 
 	"Get any one of the current dogs."
 	baseUrl := 'http://localhost:3000/dog'.
 	res := WebClientPlus method: #GET url: baseUrl.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	jsonArray := Json readFrom: res stream.
 	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
 	dog := dogs first.
@@ -1035,20 +1068,20 @@ testPatch
 	name := 'Spot'.
 	json := {#name->name} asDictionary asJsonString.
 	res := WebClientPlus method: #PATCH url: url content: json.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: dog breed.
 	
 	"Get the modified dog."
 	res := WebClientPlus method: #GET url: url.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: dog breed.
 ! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:22:05'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:18:26'!
 testPost
 	| baseUrl breed id json name res url |
 
@@ -1058,7 +1091,7 @@ testPost
 	breed := 'Beagle'.
 	json := {#name->name. #breed->breed} asDictionary asJsonString.
 	res := WebClientPlus method: #POST url: baseUrl content: json.
-	self assert: [res code = 201] description: 'Created status'.
+	self assert: res code equals: 201.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: breed.
@@ -1067,20 +1100,20 @@ testPost
 	"Get the dog just created."
 	url := '{1}/{2}' format: {baseUrl. id}.
 	res := WebClientPlus method: #GET url: url.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: breed.
 ! !
 
-!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 13:17:29'!
+!DogWebServerTests methodsFor: 'testing' stamp: 'RMV 10/9/2024 15:18:35'!
 testPut
 	| baseUrl breed dog dogs json jsonArray name res url |
 
 	"Get any one of the current dogs."
 	baseUrl := 'http://localhost:3000/dog'.
 	res := WebClientPlus method: #GET url: baseUrl.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	jsonArray := Json readFrom: res stream.
 	dogs := jsonArray collect: [ :jsonObject | VDog fromJsonObject: jsonObject ].
 	dog := dogs first.
@@ -1091,14 +1124,14 @@ testPut
 	breed := 'Greyhound'.
 	json := {#name->name. #breed->breed} asDictionary asJsonString.
 	res := WebClientPlus method: #PUT url: url content: json.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: breed.
 	
 	"Get the modified dog."
 	res := WebClientPlus method: #GET url: url.
-	self assert: [res code = 200] description: 'OK status'.
+	self assert: res code equals: 200.
 	json := Json readFrom: res stream.
 	self assert: (json at: #name) equals: name.
 	self assert: (json at: #breed) equals: breed.
@@ -1681,9 +1714,9 @@ jsonWriteOn: aWriteStream
 	"writes a JSON representation of this object to a given stream"
 	{#id -> id. #name -> name. #breed -> breed} asDictionary jsonWriteOn: aWriteStream.! !
 
-!VDog methodsFor: 'error handling' stamp: 'RMV 6/30/2024 16:32:33'!
+!VDog methodsFor: 'error handling' stamp: 'RMV 10/9/2024 15:22:24'!
 doesNotUnderstand: aMessage
-	(aMessage selector = 'bark:') ifTrue: [
+	(aMessage handler = 'bark:') ifTrue: [
 		| count |
 		count := aMessage arguments first.
 		count isNumber ifTrue: [ ('Woof!! ' repeat: count) print. ^ nil ]
@@ -2142,6 +2175,10 @@ initialize
 	].
 ! !
 
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 10/9/2024 15:23:04'!
+handler
+	^handler! !
+
 !WebRoute methodsFor: 'accessing' stamp: 'RMV 10/7/2024 11:15:18'!
 key
 	^method, ': ', path! !
@@ -2158,13 +2195,21 @@ path
 pattern
 	^pattern! !
 
-!WebRoute methodsFor: 'accessing' stamp: 'RMV 10/7/2024 11:27:21'!
+!WebRoute methodsFor: 'accessing' stamp: 'RMV 10/9/2024 15:28:37'!
 printString
-	^ 'WebRoute: ', method, ': ', path, ' handled by ', selector! !
+	| handlerName |
+	handlerName := handler isSymbol
+		ifTrue: [ handler ]
+		ifFalse: [
+			handler isBlock
+				ifTrue: [ 'a Block' ]
+				ifFalse: [ 'invalid handler' ]
+		].
+	^ 'WebRoute: ', method, ': ', path, ' handled by ', handlerName.! !
 
-!WebRoute methodsFor: 'accessing' stamp: 'RMV 9/23/2024 16:01:34'!
-selector
-	^selector! !
+!WebRoute methodsFor: 'private' stamp: 'RMV 10/9/2024 15:41:53'!
+handler: aSymbolOrBlock
+	handler := aSymbolOrBlock! !
 
 !WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:01:50'!
 method: aString
@@ -2178,17 +2223,13 @@ path: aString
 pattern: aString
 	pattern := aString! !
 
-!WebRoute methodsFor: 'private' stamp: 'RMV 9/23/2024 16:02:15'!
-selector: aSymbol
-	selector := aSymbol! !
-
-!WebRoute class methodsFor: 'instance creation' stamp: 'RMV 10/7/2024 10:25:01'!
-method: methodSymbol path: pathString selector: selectorSymbol
+!WebRoute class methodsFor: 'instance creation' stamp: 'RMV 10/9/2024 15:36:13'!
+method: methodSymbol path: pathString handler: handler
 	| route |
 	route := WebRoute new.
 	route method: methodSymbol.
 	route path: pathString.
-	route selector: selectorSymbol.
+	route handler: handler.
 	route pattern: (pathString copyWithRegex: '\:\w+' matchesReplacedWith: '*').
 	^route.! !
 
@@ -2206,7 +2247,7 @@ method: methodSymbol url: urlString content: contentString
 method: methodSymbol url: urlString headers: headerDict
 	^ self method: methodSymbol url: urlString headers: headerDict content: nil! !
 
-!WebClientPlus class methodsFor: 'as yet unclassified' stamp: 'RMV 10/8/2024 19:06:20'!
+!WebClientPlus class methodsFor: 'as yet unclassified' stamp: 'RMV 10/9/2024 15:39:02'!
 method: methodSymbol url: urlString headers: headerDict content: contentString
 	| client req res |
 	
@@ -2220,6 +2261,7 @@ method: methodSymbol url: urlString headers: headerDict content: contentString
 		headerDict associationsDo: [ :assoc | req headerAt: assoc key put: assoc value ]
 	].
 
+	"TODO: Add error handling here to handle when the server is not running."
 	res := contentString
 		ifNil: [ client sendRequest: req ]
 		ifNotNil: [ client sendRequest: req content: contentString readStream size: contentString size ].
@@ -2257,7 +2299,7 @@ element: anAssoc
 		]
 ! !
 
-!WebServerPlus methodsFor: 'initialization' stamp: 'RMV 10/8/2024 13:55:46'!
+!WebServerPlus methodsFor: 'initialization' stamp: 'RMV 10/9/2024 15:53:19'!
 initialize
 	super initialize.
 	
@@ -2272,16 +2314,21 @@ initialize
 		route := self routeForMethod: request method path: request url.
 		route
 			ifNotNil: [
-				| context |
+				| context handler |
 				context := WebContext newRequest: request route: route.
-				self perform: route selector with: context.
+				handler := route handler.
+				handler isSymbol ifTrue: [ self perform: handler with: context ].
+				handler isBlock ifTrue: [ handler value: context ].
+				"self send400Response: 'handler type ', handler class name, ' not supported'."
 			]
 			ifNil: [ request send404Response ].
 		]	! !
 
-!WebServerPlus methodsFor: 'routing' stamp: 'RMV 10/8/2024 13:56:23'!
+!WebServerPlus methodsFor: 'routing' stamp: 'RMV 10/9/2024 15:48:48'!
 dispatchRequest: request url: url
-	"This overrides the method in WebServer to assume only one action that handles all requests. It is defined in the initialize method."
+	"This overrides the method in WebServer to assume
+	only one action that handles all requests.
+	It is defined in the initialize method."
 	| pathOptions |
 
 	"Handle TRACE requests"
@@ -2316,15 +2363,18 @@ dispatchRequest: request url: url
 		on: Error 
 		do: [ :ex |
 			errorHandler 
-				ifNil:[self handleError: ex request: request]
-				ifNotNil:[errorHandler value: ex value: request]].! !
+				ifNil: [ self handleError: ex request: request ]
+				ifNotNil: [ errorHandler value: ex value: request ]
+		].! !
 
-!WebServerPlus methodsFor: 'routing' stamp: 'RMV 10/8/2024 12:51:23'!
-method: methodSymbol path: pathString selector: selectorSymbol
-	"Registers a new route"
+!WebServerPlus methodsFor: 'routing' stamp: 'RMV 10/9/2024 15:38:14'!
+method: methodSymbol path: pathString handler: handler
+	"Registers a new route.
+	handler can be a method selector or a block.
+	The method or block will be passed a WebContext object."
 	| isDynamic pathOptions route |
 	
-	route := WebRoute method: methodSymbol path: pathString selector: selectorSymbol.
+	route := WebRoute method: methodSymbol path: pathString handler: handler.
 	isDynamic := pathString includesSubString: '/:'.
 	isDynamic
 		ifTrue: [ dynamicRoutes add: route ]
@@ -2351,12 +2401,13 @@ routeForMethod: methodSymbol path: pathString
 			ifNone: [ nil ].
 	]! !
 
-!DogWebServer methodsFor: 'initialization' stamp: 'RMV 10/8/2024 17:06:29'!
+!DogWebServer methodsFor: 'initialization' stamp: 'RMV 10/9/2024 15:56:47'!
 initialize
 	| dog1 dog2 |
 		
 	super initialize.
 	
+	"Create some initial dogs."
 	dog1 := VDog name: 'Comet' breed: 'Whippet'.
 	dog2 := VDog name: 'Oscar' breed: 'German Shorthaired Pointer'.
 	dogDict := Dictionary newFrom: {
@@ -2364,15 +2415,32 @@ initialize
 		dog2 id -> dog2
 	}.
 	
+	"Register routes."
+	self method: #GET path: '/hello' handler: [ :context |
+		'handling GET /hello' print.
+		context request send200Response: 'Hello, World!!'
+	].
 	"Don't forget the colon the end of the selectors!!"
-	self method: #GET path: '/hello' selector: #helloWorld:.
-	self method: #GET path: '/dog' selector: #getDogs:.
-	self method: #GET path: '/dog/:id' selector: #getDogAsJson:.
-	self method: #POST path: '/dog' selector: #createDog:.
-	self method: #PATCH path: '/dog/:id' selector: #patchDog:.
-	self method: #PUT path: '/dog/:id' selector: #updateDog:.
-	self method: #DELETE path: '/dog/:id' selector: #deleteDog:.
-	self method: #DELETE path: '/dog' selector: #deleteAllDogs:.! !
+	self method: #GET path: '/dog' handler: #getDogs:.
+	self method: #GET path: '/dog/:id' handler: #getDogAsJson:.
+	self method: #POST path: '/dog' handler: #createDog:.
+	self method: #PATCH path: '/dog/:id' handler: #patchDog:.
+	self method: #PUT path: '/dog/:id' handler: #updateDog:.
+	self method: #DELETE path: '/dog/:id' handler: #deleteDog:.
+	self method: #DELETE path: '/dog' handler: #deleteAllDogs:.! !
+
+!DogWebServer methodsFor: 'private' stamp: 'RMV 10/8/2024 20:34:27'!
+deleteAllDogs: aWebContext
+	"This should only be used by the setUp method in DogWebServerTests."
+	| req |
+	
+	req := aWebContext request.
+
+	dogDict := Dictionary new.
+
+	"Return an empty response."
+	^ req send200Response: ''
+! !
 
 !DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 09:26:35'!
 createDog: aWebContext
@@ -2391,19 +2459,6 @@ createDog: aWebContext
 	res headerAt: 'Content-Type' put: 'application/json; charset=utf-8'.
 	^ req sendResponse: res content: (Json render: dog)
 
-! !
-
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/8/2024 20:34:27'!
-deleteAllDogs: aWebContext
-	"This should only be used by the setUp method in DogWebServerTests."
-	| req |
-	
-	req := aWebContext request.
-
-	dogDict := Dictionary new.
-
-	"Return an empty response."
-	^ req send200Response: ''
 ! !
 
 !DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:18:01'!
@@ -2496,48 +2551,6 @@ getDogsAsJson: aRequest
 	aRequest send200Response: json contentType: 'application/json; charset=utf-8'
 	
 ! !
-
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 9/26/2024 20:08:49'!
-handleDog: aRequest	
-	"handle an HTTP request based on its method"
-	
-	| id method |
-		
-	method := aRequest method.
-	
-	(#('DELETE' 'GET' 'PUT') includes: method) ifTrue: [
-		"Get the path parameter value."
-		"TODO: Is this really the best way to do it?"
-		| parts |
-		parts := aRequest url prefixAndSuffix: $/.
-		id := [parts last asNumber] on: Error do: [ :e |
-			| res |
-			res := WebResponse protocol: aRequest protocol code: 400.
-			^ aRequest sendResponse: res content: e messageText
-		].
-	].
-
-	method caseOf: {
-		['GET'] -> [ | accept |
-			accept := aRequest headerAt: 'Accept'.
-			(accept includesSubString: 'application/json') ifTrue: [
-				id
-					ifNil: [^self getDogsAsJson: aRequest]
-					ifNotNil: [^self getDogAsJson: aRequest id: id]
-			].
- 			(accept includesSubString: 'text/html') ifTrue: [
- 				^self getDogsAsHtml: aRequest
-			]
-		].
-		['POST'] -> [self createDog: aRequest].
- 		['DELETE'] -> [self deleteDog: aRequest id: id value].
-		['PUT'] -> [self updateDog: aRequest id: id value]
- 	}! !
-
-!DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/7/2024 11:20:36'!
-helloWorld: aWebContext
-	
-	aWebContext request send200Response: 'Hello, World!!'! !
 
 !DogWebServer methodsFor: 'message handling' stamp: 'RMV 10/8/2024 12:44:42'!
 patchDog: aWebContext
